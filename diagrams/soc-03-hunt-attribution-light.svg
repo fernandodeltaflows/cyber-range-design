@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 402" width="760" height="402" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
+  <rect width="760" height="402" fill="#ffffff"/>
+  <text x="380" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">SOC III - Hunt &amp; Attribution</text>
+  <text x="380" y="58" text-anchor="middle" font-size="12.5" fill="#57606a">2 hours · High · Telecommunications</text>
+  <rect x="30.0" y="92" width="157.0" height="88" rx="6" fill="#fdf0e6" stroke="#c98a4b" stroke-width="1.5"/>
+  <text x="108.5" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Pivot from the</text>
+  <text x="108.5" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">indicator</text>
+  <path d="M 191.0 136 L 207.0 136" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 207.0 136 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="211.0" y="92" width="157.0" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="289.5" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Establish presence &amp;</text>
+  <text x="289.5" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">first contact</text>
+  <path d="M 372.0 136 L 388.0 136" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 388.0 136 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="392.0" y="92" width="157.0" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="470.5" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Characterise the</text>
+  <text x="470.5" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">intrusion</text>
+  <path d="M 553.0 136 L 569.0 136" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 569.0 136 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="573.0" y="92" width="157.0" height="88" rx="6" fill="#fdf0e6" stroke="#c98a4b" stroke-width="1.5"/>
+  <text x="651.5" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Separate exfil from</text>
+  <text x="651.5" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">egress</text>
+  <rect x="30.0" y="210" width="217.3" height="88" rx="6" fill="#fdf0e6" stroke="#c98a4b" stroke-width="1.5"/>
+  <text x="138.7" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Hunt the unanchored window</text>
+  <path d="M 251.3 254 L 267.3 254" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 267.3 254 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="271.3" y="210" width="217.3" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="380.0" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Attribute on evidence</text>
+  <path d="M 492.7 254 L 508.7 254" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 508.7 254 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="512.7" y="210" width="217.3" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="621.3" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Produce the warning product</text>
+  <rect x="30" y="322" width="700" height="46" rx="6" fill="#f5f5f5" stroke="#b0b0b0" stroke-width="1.5"/>
+  <text x="380" y="350" text-anchor="middle" font-size="12" fill="#57606a">Starting position: one external indicator, no incident</text>
+</svg>

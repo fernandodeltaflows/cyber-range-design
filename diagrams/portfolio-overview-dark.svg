@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" width="760" height="400" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
+  <rect width="760" height="400" fill="#0d1117"/>
+  <text x="380" y="36" text-anchor="middle" font-size="19" font-weight="700" fill="#e6edf3">Cyber Range Design Portfolio</text>
+  <text x="380" y="58" text-anchor="middle" font-size="12.5" fill="#8b949e">Two training ranges and a three-tier assessment programme</text>
+  <rect x="30" y="90" width="200" height="112" rx="6" fill="#2b1d12" stroke="#d29922" stroke-width="1.5"/>
+  <text x="130" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#e6edf3">Adversary Emulation</text>
+  <text x="130" y="142" text-anchor="middle" font-size="11.5" fill="#8b949e">3 campaigns · 67 missions</text>
+  <line x1="60" y1="156" x2="200" y2="156" stroke="#d29922" stroke-width="1" opacity="0.5"/>
+  <text x="130" y="178" text-anchor="middle" font-size="12.5" font-weight="600" fill="#d29922">Perform the intrusion</text>
+  <rect x="280" y="90" width="200" height="112" rx="6" fill="#14202e" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="380" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#e6edf3">DFIR and Detection</text>
+  <text x="380" y="142" text-anchor="middle" font-size="11.5" fill="#8b949e">5 campaigns · 60 missions</text>
+  <line x1="310" y1="156" x2="450" y2="156" stroke="#58a6ff" stroke-width="1" opacity="0.5"/>
+  <text x="380" y="178" text-anchor="middle" font-size="12.5" font-weight="600" fill="#58a6ff">Investigate the evidence</text>
+  <rect x="530" y="90" width="200" height="112" rx="6" fill="#12261a" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="630" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#e6edf3">SOC Assessment</text>
+  <text x="630" y="142" text-anchor="middle" font-size="11.5" fill="#8b949e">3 tiers · ranked scoring</text>
+  <line x1="560" y1="156" x2="700" y2="156" stroke="#3fb950" stroke-width="1" opacity="0.5"/>
+  <text x="630" y="178" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3fb950">Measure the analyst</text>
+  <path d="M 234 146 L 274 146" stroke="#484f58" stroke-width="2"/>
+  <path d="M 274 146 l -6 -5 l 0 10 z" fill="#484f58"/>
+  <path d="M 484 146 L 524 146" stroke="#484f58" stroke-width="2"/>
+  <path d="M 524 146 l -6 -5 l 0 10 z" fill="#484f58"/>
+  <rect x="30" y="228" width="700" height="66" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1.5"/>
+  <text x="380" y="252" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">The same person designed all three</text>
+  <text x="380" y="274" text-anchor="middle" font-size="12" fill="#8b949e">A detection exercise is only honest if someone produced the telemetry it asks students to find</text>
+  <rect x="30" y="312" width="700" height="56" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1.5"/>
+  <text x="380" y="334" text-anchor="middle" font-size="12" font-weight="700" fill="#e6edf3">Framework grounding</text>
+  <text x="380" y="354" text-anchor="middle" font-size="11.5" fill="#8b949e">MITRE ATT&amp;CK · MITRE D3FEND · NIST SP 800-61 · ISO/IEC 27037 · ACPO · RFC 3227 · CVSS v3.1 · DoD 8140 / DCWF · NICE · SFIA</text>
+</svg>

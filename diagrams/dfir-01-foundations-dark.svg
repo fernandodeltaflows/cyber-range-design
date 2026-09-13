@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 284" width="760" height="284" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
+  <rect width="760" height="284" fill="#0d1117"/>
+  <text x="380" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#e6edf3">Foundations &amp; Evidence Orientation</text>
+  <text x="380" y="58" text-anchor="middle" font-size="12.5" fill="#8b949e">13 missions · Day 1</text>
+  <rect x="30.0" y="92" width="157.0" height="88" rx="6" fill="#14202e" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="108.5" y="122" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">Know your environment</text>
+  <text x="108.5" y="164" text-anchor="middle" font-size="11.5" fill="#58a6ff" font-weight="600">6</text>
+  <path d="M 191.0 136 L 207.0 136" stroke="#484f58" stroke-width="2"/>
+  <path d="M 207.0 136 l -5 -4 l 0 8 z" fill="#484f58"/>
+  <rect x="211.0" y="92" width="157.0" height="88" rx="6" fill="#14202e" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="289.5" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">The incident response</text>
+  <text x="289.5" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">life cycle</text>
+  <text x="289.5" y="164" text-anchor="middle" font-size="11.5" fill="#58a6ff" font-weight="600">1</text>
+  <path d="M 372.0 136 L 388.0 136" stroke="#484f58" stroke-width="2"/>
+  <path d="M 388.0 136 l -5 -4 l 0 8 z" fill="#484f58"/>
+  <rect x="392.0" y="92" width="157.0" height="88" rx="6" fill="#14202e" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="470.5" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">Where evidence lives</text>
+  <text x="470.5" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">on Windows</text>
+  <text x="470.5" y="164" text-anchor="middle" font-size="11.5" fill="#58a6ff" font-weight="600">3</text>
+  <path d="M 553.0 136 L 569.0 136" stroke="#484f58" stroke-width="2"/>
+  <path d="M 569.0 136 l -5 -4 l 0 8 z" fill="#484f58"/>
+  <rect x="573.0" y="92" width="157.0" height="88" rx="6" fill="#2b1d12" stroke="#d29922" stroke-width="1.5"/>
+  <text x="651.5" y="122" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">Integrity and custody</text>
+  <text x="651.5" y="164" text-anchor="middle" font-size="11.5" fill="#d29922" font-weight="600">3</text>
+  <rect x="30" y="204" width="700" height="46" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1.5"/>
+  <text x="380" y="232" text-anchor="middle" font-size="12" fill="#8b949e">Rules taught after the artifacts they govern</text>
+</svg>

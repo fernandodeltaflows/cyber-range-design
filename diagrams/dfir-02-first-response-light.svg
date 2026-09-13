@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 402" width="760" height="402" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
+  <rect width="760" height="402" fill="#ffffff"/>
+  <text x="380" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">First-Response Triage</text>
+  <text x="380" y="58" text-anchor="middle" font-size="12.5" fill="#57606a">11 missions · Day 1</text>
+  <rect x="30.0" y="92" width="157.0" height="88" rx="6" fill="#fdf0e6" stroke="#c98a4b" stroke-width="1.5"/>
+  <text x="108.5" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Prepare before you</text>
+  <text x="108.5" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">touch the keyboard</text>
+  <text x="108.5" y="164" text-anchor="middle" font-size="11.5" fill="#c98a4b" font-weight="600">1</text>
+  <path d="M 191.0 136 L 207.0 136" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 207.0 136 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="211.0" y="92" width="157.0" height="88" rx="6" fill="#fdf0e6" stroke="#c98a4b" stroke-width="1.5"/>
+  <text x="289.5" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Anchor the when and</text>
+  <text x="289.5" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">the who</text>
+  <text x="289.5" y="164" text-anchor="middle" font-size="11.5" fill="#c98a4b" font-weight="600">1</text>
+  <path d="M 372.0 136 L 388.0 136" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 388.0 136 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="392.0" y="92" width="157.0" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="470.5" y="122" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Check the accounts</text>
+  <text x="470.5" y="164" text-anchor="middle" font-size="11.5" fill="#5b7a9e" font-weight="600">2</text>
+  <path d="M 553.0 136 L 569.0 136" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 569.0 136 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="573.0" y="92" width="157.0" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="651.5" y="122" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Know who does what</text>
+  <text x="651.5" y="164" text-anchor="middle" font-size="11.5" fill="#5b7a9e" font-weight="600">1</text>
+  <rect x="30.0" y="210" width="217.3" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="138.7" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Hunt for persistence</text>
+  <text x="138.7" y="282" text-anchor="middle" font-size="11.5" fill="#5b7a9e" font-weight="600">2</text>
+  <path d="M 251.3 254 L 267.3 254" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 267.3 254 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="271.3" y="210" width="217.3" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="380.0" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">The dropped file</text>
+  <text x="380.0" y="282" text-anchor="middle" font-size="11.5" fill="#5b7a9e" font-weight="600">2</text>
+  <path d="M 492.7 254 L 508.7 254" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 508.7 254 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="512.7" y="210" width="217.3" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="621.3" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Document your findings</text>
+  <text x="621.3" y="282" text-anchor="middle" font-size="11.5" fill="#5b7a9e" font-weight="600">2</text>
+  <rect x="30" y="322" width="700" height="46" rx="6" fill="#f5f5f5" stroke="#b0b0b0" stroke-width="1.5"/>
+  <text x="380" y="350" text-anchor="middle" font-size="12" fill="#57606a">Preparation before action · time and identity before findings</text>
+</svg>

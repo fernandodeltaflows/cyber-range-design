@@ -15,6 +15,11 @@ topology, and the reasoning behind them.
 
 ---
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="diagrams/portfolio-overview-dark.svg">
+  <img alt="Portfolio overview: two training ranges and a three-tier assessment programme" src="diagrams/portfolio-overview-light.svg" width="760">
+</picture>
+
 ## The two ranges
 
 ### [Adversary emulation](ranges/adversary-emulation/) - 3 campaigns, 67 missions
@@ -48,11 +53,15 @@ the evidence it leaves behind. One continuity scenario across the week.
 A separate product from the training ranges: an instrument that **measures**
 whether an analyst can find an intrusion, rather than one that teaches them to.
 
-| Tier | Competency focus | Work role |
-|---|---|---|
-| SOC I | SIEM intrusion triage | DCWF 511 Cyber Defense Analyst |
-| SOC II | Intrusion containment | DCWF 531 Cyber Defense Incident Responder |
-| SOC III | Hunt and attribution | DCWF 141 Threat/Warning Analyst |
+| Tier | Assessment | Work role | Sector |
+|---|---|---|---|
+| I | [SIEM Intrusion Triage](ranges/soc-assessments/01-soc-i-siem-intrusion-triage.md) | DCWF 511 Cyber Defense Analyst | Financial services |
+| II | [Intrusion Containment](ranges/soc-assessments/02-soc-ii-intrusion-containment.md) | DCWF 531 Cyber Defense Incident Responder | Electricity distribution |
+| III | [Hunt & Attribution](ranges/soc-assessments/03-soc-iii-hunt-attribution.md) | DCWF 141 Threat/Warning Analyst | Telecommunications |
+
+Three two-hour, numerically scored assessments across three critical
+infrastructure sectors. What the candidate is handed at minute zero is the
+design: a detection, a foothold, or one external indicator and no incident.
 
 Tiered against **DoD 8140 / DCWF** rather than an invented scale, with NICE
 supplying the assessable task and skill statements. Architecture and framework
@@ -162,3 +171,10 @@ delivery material, so nothing withheld is recoverable from what is here.
 
 Documentation licensed [CC BY 4.0](LICENSE). Published with the permission of
 the client for whom the courses were developed.
+
+---
+
+> **Confidentiality.** These cyber ranges were designed and built for private
+> clients. This page documents design and architecture only. Scenario content,
+> mission structure, answer keys and walkthroughs remain confidential, and are
+> neither published here nor available on request.
