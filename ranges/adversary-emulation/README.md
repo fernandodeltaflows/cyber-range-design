@@ -4,6 +4,11 @@ Three campaigns over three days against an isolated lab Active Directory
 domain. The student works as an operator on an authorised engagement, and every
 technique is framed as emulation carried out to improve the defender.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/adversary-emulation-topology-dark.svg">
+  <img alt="Adversary emulation range topology" src="../../diagrams/adversary-emulation-topology-light.svg" width="760">
+</picture>
+
 ## The arc
 
 The three days follow the natural shape of an authorised engagement, and the
