@@ -1,0 +1,117 @@
+# Cyber Range Design
+
+Design documentation for two hands-on cyber ranges I built as graded, lab-based
+training: one adversary emulation range and one DFIR range.
+
+**8 campaigns. 127 graded missions.** Built on a commercial cyber range
+platform and delivered as instructor-led training for a national cyber security
+training programme.
+
+**Answer keys and walkthroughs are deliberately not published.** These courses
+are delivered commercially and the assessments are live. What is here is the
+design: scenarios, chains, block structure, learning objectives, environment
+topology, and the reasoning behind them.
+
+---
+
+## The two ranges
+
+### [Adversary emulation](ranges/adversary-emulation/) - 3 campaigns, 67 missions
+
+An authorised adversary-emulation progression against an isolated lab Active
+Directory domain. Each day operates from the position the previous day reached.
+
+| Campaign | Focus | Missions |
+|---|---|---|
+| [AD Enumeration & Path Discovery](ranges/adversary-emulation/01-ad-enumeration.md) | Profile a host and a domain, map the routes an adversary could travel | 19 |
+| [Movement, Privilege Escalation, Persistence](ranges/adversary-emulation/02-movement-privesc-persistence.md) | Reuse token context, move laterally, escalate, establish persistence | 26 |
+| [Stealth, Payload Handling, C2](ranges/adversary-emulation/03-stealth-payload-c2.md) | Operate against logging and in-memory defences, integrate with a C2 framework | 22 |
+
+### [DFIR and detection](ranges/dfir/) - 5 campaigns, 60 missions
+
+The other side of the same coin: finding and reconstructing an intrusion from
+the evidence it leaves behind. One continuity scenario across the week.
+
+| Campaign | Focus | Missions |
+|---|---|---|
+| [Foundations & Evidence Orientation](ranges/dfir/01-foundations-evidence-orientation.md) | Evidence handling, chain of custody, orientation on the estate | 13 |
+| [First-Response Triage](ranges/dfir/02-first-response-triage.md) | Work a live incident under first-response constraints | 11 |
+| [Detection & Log Analysis](ranges/dfir/03-detection-log-analysis.md) | Validate alerts, separate true from false positives, scope indicators | 12 |
+| [Triage & Severity Scoring](ranges/dfir/04-triage-severity-scoring.md) | Score three incidents with CVSS v3.1 and prioritise the queue | 12 |
+| [Live Volatile Collection](ranges/dfir/05-live-volatile-collection.md) | Collect volatile evidence in order of volatility from a running host | 12 |
+
+---
+
+## Why both
+
+The same person designed the range that emulates the intrusion and the range
+that investigates it. That is deliberate.
+
+A detection exercise is only honest if someone actually produced the telemetry
+it asks students to find. An emulation exercise is only useful if you know what
+the defender will see. Building both sides means the offensive range is written
+with the evidence trail in mind, and the defensive range is built on artifacts
+that a real technique actually leaves behind.
+
+It also shows up inside the offensive campaigns, where every technique is
+paired with the question of how it appears in the defender's telemetry. A
+student who can run a domain enumeration but cannot tell a blue team which log
+sources would have caught it has learned half the lesson.
+
+---
+
+## Teaching students to distrust AI-generated code
+
+The adversary emulation range assesses something most offensive training does
+not: **whether a student can critically review code a language model wrote for
+them.**
+
+Students are given AI-generated PowerShell and asked to find what is wrong with
+it - a cmdlet that does not exist, a scope boundary the script quietly crosses -
+and then to harden and run a corrected version. It appears in all three
+campaigns and has a dedicated module in the third.
+
+This was added because it is now how offensive scripts actually get written.
+A student who runs generated code without reading it will eventually run
+something that touches a host outside the engagement scope, and the time to
+learn that is in a lab.
+
+---
+
+## Design constraints
+
+These campaigns are graded and auto-scored, which makes assessment integrity a
+design problem rather than an afterthought. Four constraints shaped every one:
+
+- **Answers are anchored to the environment.** A graded answer must be
+  derivable only by doing the work in the range. A mission whose answer can be
+  produced without touching the environment measures nothing.
+- **Difficulty is measured, not asserted.** What a mission was priced at, what
+  a change was expected to do, and what a solver actually experienced are three
+  different numbers and are kept apart.
+- **Answer integrity is designed in, not patched on.** An answer that is
+  readable on the host, or reachable without the taught skill, is not an
+  assessment question.
+- **Nothing ships unvalidated.** Mechanical checks before release, and a blind
+  solve by someone who did not build it.
+
+---
+
+## What is not in this repository
+
+- Answer keys, accepted values, and walkthroughs
+- The full mission list. Block structure and counts are published; the 127
+  individual task statements are not, because they are live questions
+- Platform workbooks, build scripts, and telemetry generators
+- Credentials, machine images, and internal addressing
+- Course slide decks, student handouts and written assessments
+
+This documentation was authored from design sources rather than exported from
+delivery material, so nothing withheld is recoverable from what is here.
+
+---
+
+## Licence
+
+Documentation licensed [CC BY 4.0](LICENSE). Published with the permission of
+the client for whom the courses were developed.
