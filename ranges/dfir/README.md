@@ -19,6 +19,11 @@ the estate, so the cognitive load moves off orientation and onto the technique
 being taught. It also lets an artifact introduced early be recontextualised
 later, which is how real investigations actually feel.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/dfir-range-topology-dark.svg">
+  <img alt="DFIR and detection range topology" src="../../diagrams/dfir-range-topology-light.svg" width="760">
+</picture>
+
 ## The arc
 
 **Foundations & Evidence Orientation** establishes the discipline before the
