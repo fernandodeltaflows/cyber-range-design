@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" width="760" height="420" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
+  <rect width="760" height="420" fill="#ffffff"/>
+  <text x="380" y="34" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1a1a">SOC Analyst Assessment Programme</text>
+  <text x="380" y="55" text-anchor="middle" font-size="13" fill="#57606a">Tiered against DoD 8140 / DCWF, not an invented scale</text>
+  <rect x="40" y="95" width="200" height="130" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="140.0" y="125" text-anchor="middle" font-size="17" font-weight="700" fill="#1a1a1a">SOC I</text>
+  <text x="140.0" y="148" text-anchor="middle" font-size="12.5" fill="#57606a">SIEM intrusion triage</text>
+  <line x1="70" y1="163" x2="210" y2="163" stroke="#5b7a9e" stroke-width="1" opacity="0.5"/>
+  <text x="140.0" y="183" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5b7a9e">DCWF 511</text>
+  <text x="140.0" y="201" text-anchor="middle" font-size="11.5" fill="#57606a">Cyber Defense Analyst</text>
+  <text x="140.0" y="255" text-anchor="middle" font-size="12" fill="#57606a">Can they recognise an</text>
+  <text x="140.0" y="271" text-anchor="middle" font-size="12" fill="#57606a">intrusion in front of them?</text>
+  <path d="M 248 160.0 L 272 160.0" stroke="#9aa4b2" stroke-width="2"/><path d="M 272 160.0 l -6 -5 l 0 10 z" fill="#9aa4b2"/>
+  <rect x="280" y="95" width="200" height="130" rx="6" fill="#fdf0e6" stroke="#c98a4b" stroke-width="1.5"/>
+  <text x="380.0" y="125" text-anchor="middle" font-size="17" font-weight="700" fill="#1a1a1a">SOC II</text>
+  <text x="380.0" y="148" text-anchor="middle" font-size="12.5" fill="#57606a">Intrusion containment</text>
+  <line x1="310" y1="163" x2="450" y2="163" stroke="#c98a4b" stroke-width="1" opacity="0.5"/>
+  <text x="380.0" y="183" text-anchor="middle" font-size="12.5" font-weight="700" fill="#c98a4b">DCWF 531</text>
+  <text x="380.0" y="201" text-anchor="middle" font-size="11.5" fill="#57606a">Cyber Defense</text>
+  <text x="380.0" y="216" text-anchor="middle" font-size="11.5" fill="#57606a">Incident Responder</text>
+  <text x="380.0" y="255" text-anchor="middle" font-size="12" fill="#57606a">Can they act on it without</text>
+  <text x="380.0" y="271" text-anchor="middle" font-size="12" fill="#57606a">destroying the evidence?</text>
+  <path d="M 488 160.0 L 512 160.0" stroke="#9aa4b2" stroke-width="2"/><path d="M 512 160.0 l -6 -5 l 0 10 z" fill="#9aa4b2"/>
+  <rect x="520" y="95" width="200" height="130" rx="6" fill="#e9f1ea" stroke="#5f8a62" stroke-width="1.5"/>
+  <text x="620.0" y="125" text-anchor="middle" font-size="17" font-weight="700" fill="#1a1a1a">SOC III</text>
+  <text x="620.0" y="148" text-anchor="middle" font-size="12.5" fill="#57606a">Hunt and attribution</text>
+  <line x1="550" y1="163" x2="690" y2="163" stroke="#5f8a62" stroke-width="1" opacity="0.5"/>
+  <text x="620.0" y="183" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5f8a62">DCWF 141</text>
+  <text x="620.0" y="201" text-anchor="middle" font-size="11.5" fill="#57606a">Threat/Warning Analyst</text>
+  <text x="620.0" y="255" text-anchor="middle" font-size="12" fill="#57606a">Can they find one nobody</text>
+  <text x="620.0" y="271" text-anchor="middle" font-size="12" fill="#57606a">flagged, and attribute it?</text>
+  <text x="380" y="297" text-anchor="middle" font-size="12" font-style="italic" fill="#57606a">The same competency assessed at increasing depth, not three difficulty settings</text>
+  <rect x="40" y="330" width="680" height="56" rx="6" fill="#f5f5f5" stroke="#b0b0b0" stroke-width="1.5"/>
+  <text x="380" y="352" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a1a">Framework grounding</text>
+  <text x="380" y="372" text-anchor="middle" font-size="12" fill="#57606a">NICE (NIST SP 800-181r1) · DoD 8140 / DCWF · MITRE ATT&amp;CK · MITRE D3FEND · SFIA</text>
+</svg>

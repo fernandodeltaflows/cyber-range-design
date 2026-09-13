@@ -77,3 +77,25 @@ is actually for.
 **Prove the host is clean.** This mission exists because it is the one students
 skip. Including it as a graded item makes cleanup part of the technique rather
 than an optional courtesy.
+
+---
+
+## Framework alignment
+
+| Tactic | Technique |
+|---|---|
+| Credential Access | T1003 OS Credential Dumping |
+| Credential Access | T1558 Steal or Forge Kerberos Tickets |
+| Privilege Escalation | T1134 Access Token Manipulation |
+| Privilege Escalation | T1574 Hijack Execution Flow |
+| Lateral Movement | T1021.006 Remote Services: Windows Remote Management |
+| Lateral Movement | T1047 Windows Management Instrumentation |
+| Lateral Movement | T1550 Use Alternate Authentication Material |
+| Persistence | T1547.001 Boot or Logon Autostart: Registry Run Keys |
+| Persistence | T1053.005 Scheduled Task/Job: Scheduled Task |
+| Persistence | T1546.003 Event Triggered Execution: WMI Event Subscription |
+| Persistence | T1543.003 Create or Modify System Process: Windows Service |
+
+Three persistence mechanisms are taught rather than one, and each is paired with
+the distinct telemetry signature it leaves. The campaign closes on verifying
+removal, which is the D3FEND side of the same content.

@@ -55,3 +55,18 @@ common failure in junior triage, and it is assessed explicitly here.
 
 **OODA anchors the decision.** The closing mission places triage inside a
 decision framework, so the student leaves with a model rather than a procedure.
+
+---
+
+## Framework alignment
+
+| Standard | Where it is used |
+|---|---|
+| **CVSS v3.1** | Base metrics, base score, severity rating and vector string construction |
+| **NIST SP 800-61** | Prioritisation as a named activity, not an informal one |
+| **OODA** | The decision frame the closing mission places triage inside |
+| **NICE / DCWF 511 to 531** | The campaign sits on the boundary between analyst and incident responder |
+
+CVSS supplies a number. Triage supplies a decision. The campaign assesses the
+gap between them explicitly, because treating the score as the decision is the
+most common failure in junior triage.

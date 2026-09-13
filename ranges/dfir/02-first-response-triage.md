@@ -59,3 +59,15 @@ spot that an intruder relies on.
 **Documentation is graded.** The final two missions ask why context is recorded
 and what belongs in a custody field. Investigative technique that cannot survive
 handover to a colleague or a court has limited value.
+
+---
+
+## Framework alignment
+
+| Standard | Where it is used |
+|---|---|
+| **NIST SP 800-61** | First response sits inside the Detection and Analysis phase |
+| **ISO/IEC 27037** | Preservation constraints on a running system |
+| **ACPO** | Principle-driven decisions about acting on live evidence |
+| **MITRE ATT&CK** | The persistence mechanisms hunted are T1547.001 and T1053.005 |
+| **MITRE D3FEND** | Enumeration and file analysis as defensive techniques |

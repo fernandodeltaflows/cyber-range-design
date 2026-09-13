@@ -57,3 +57,17 @@ the reason.
 
 **Standards are named.** ACPO and the NIST life cycle are cited directly rather
 than paraphrased, so a student can carry the vocabulary into a real team.
+
+---
+
+## Framework alignment
+
+| Standard | Where it is used |
+|---|---|
+| **NIST SP 800-61** Computer Security Incident Handling Guide | The incident response life cycle and the ordering of its phases |
+| **ISO/IEC 27037** | Identification, collection, acquisition and preservation of digital evidence |
+| **ACPO** Good Practice Guide for Digital Evidence | The handling principles applied to a live decision |
+| **MITRE D3FEND** | Evidence sources framed as defensive observation surfaces |
+
+Standards are cited by name in the campaign itself rather than paraphrased, so a
+student leaves with vocabulary they can carry into a real team.

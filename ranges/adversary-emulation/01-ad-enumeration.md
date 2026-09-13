@@ -100,3 +100,26 @@ graph from students who can operate BloodHound.
 reading the path graph and judging which route is worth taking. Difficulty
 manufactured by hiding things is fragile: it disappears the moment one student
 tells another where to look.
+
+---
+
+## Framework alignment
+
+Techniques exercised, mapped to MITRE ATT&CK Enterprise. This is a
+technique-level correspondence describing what a student actually performs, not
+a formal control mapping.
+
+| Tactic | Technique |
+|---|---|
+| Discovery | T1033 System Owner/User Discovery |
+| Discovery | T1082 System Information Discovery |
+| Discovery | T1007 System Service Discovery |
+| Discovery | T1087.002 Account Discovery: Domain Account |
+| Discovery | T1069.002 Permission Groups Discovery: Domain Groups |
+| Discovery | T1018 Remote System Discovery |
+| Discovery | T1482 Domain Trust Discovery |
+| Execution | T1059.001 Command and Scripting Interpreter: PowerShell |
+
+The defensive counterpart is covered throughout: each technique is paired with
+the telemetry it produces, which is where MITRE D3FEND and the detection side of
+the DFIR range meet this one.

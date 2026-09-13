@@ -84,3 +84,22 @@ leaves nothing, only operations whose traces nobody looked for.
 **The tooling boundary is a graded mission.** Naming the out-of-scope target
 and enforcing scope are assessed items, not briefing notes. On an engagement,
 scope is the difference between a test and an incident.
+
+---
+
+## Framework alignment
+
+| Tactic | Technique |
+|---|---|
+| Defense Evasion | T1562.001 Impair Defenses: Disable or Modify Tools |
+| Defense Evasion | T1027 Obfuscated Files or Information |
+| Defense Evasion | T1027.010 Obfuscated Files: Command Obfuscation |
+| Defense Evasion | T1620 Reflective Code Loading |
+| Defense Evasion | T1070 Indicator Removal |
+| Execution | T1059.001 Command and Scripting Interpreter: PowerShell |
+| Command and Control | T1071.001 Application Layer Protocol: Web Protocols |
+| Command and Control | T1105 Ingress Tool Transfer |
+
+The campaign terminates in a detection-opportunities report rather than in a
+successful callback, so every technique above is assessed twice: once as
+execution, once as the detection surface it exposes.

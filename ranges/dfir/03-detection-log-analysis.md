@@ -58,3 +58,14 @@ each boundary, is what separates an analyst from a log reader.
 **Integrity hashing recurs.** It appears here as it did on Day 1 and will again
 on Day 4. Deliberate repetition across campaigns makes it routine rather than a
 thing that was mentioned once.
+
+---
+
+## Framework alignment
+
+| Standard | Where it is used |
+|---|---|
+| **NIST SP 800-61** | Precursor and indicator are used in their SP 800-61 senses |
+| **MITRE ATT&CK** | The activity investigated spans Credential Access, Command and Control and Execution |
+| **MITRE D3FEND** | Alert validation and indicator scoping as defensive technique |
+| **NICE / DCWF 511** Cyber Defense Analyst | The work role this campaign assesses against |

@@ -1,11 +1,12 @@
 # Cyber Range Design
 
-Design documentation for two hands-on cyber ranges I built as graded, lab-based
-training: one adversary emulation range and one DFIR range.
+Design documentation for hands-on cyber security ranges I designed and built:
+two training ranges, one offensive and one defensive, and a three-tier SOC
+analyst assessment programme.
 
-**8 campaigns. 127 graded missions.** Built on a commercial cyber range
-platform and delivered as instructor-led training for a national cyber security
-training programme.
+**8 training campaigns, 127 graded missions, and a 3-tier assessment
+programme.** Built on a commercial cyber range platform for a national cyber
+security training programme.
 
 **Answer keys and walkthroughs are deliberately not published.** These courses
 are delivered commercially and the assessments are live. What is here is the
@@ -42,6 +43,24 @@ the evidence it leaves behind. One continuity scenario across the week.
 
 ---
 
+### [SOC analyst assessment programme](ranges/soc-assessments/) - 3 tiers
+
+A separate product from the training ranges: an instrument that **measures**
+whether an analyst can find an intrusion, rather than one that teaches them to.
+
+| Tier | Competency focus | Work role |
+|---|---|---|
+| SOC I | SIEM intrusion triage | DCWF 511 Cyber Defense Analyst |
+| SOC II | Intrusion containment | DCWF 531 Cyber Defense Incident Responder |
+| SOC III | Hunt and attribution | DCWF 141 Threat/Warning Analyst |
+
+Tiered against **DoD 8140 / DCWF** rather than an invented scale, with NICE
+supplying the assessable task and skill statements. Architecture and framework
+grounding are documented; mission content is not, for the reasons given on that
+page.
+
+---
+
 ## Why both
 
 The same person designed the range that emulates the intrusion and the range
@@ -57,6 +76,31 @@ It also shows up inside the offensive campaigns, where every technique is
 paired with the question of how it appears in the defender's telemetry. A
 student who can run a domain enumeration but cannot tell a blue team which log
 sources would have caught it has learned half the lesson.
+
+---
+
+## Framework grounding
+
+Every range is written against published standards rather than an in-house
+scheme, so the competencies assessed mean something outside the organisation
+that issued them.
+
+| Framework | Where it is used |
+|---|---|
+| **MITRE ATT&CK** Enterprise | Adversary emulation: technique-level mapping on every campaign |
+| **MITRE D3FEND** (v1.3.0) | The defensive counterpart, across DFIR and the assessment programme |
+| **NIST SP 800-61** | DFIR: the incident response life cycle and its phase boundaries |
+| **ISO/IEC 27037** | DFIR: identification, collection, acquisition and preservation of evidence |
+| **ACPO** Good Practice Guide | DFIR: the handling principles applied to live decisions |
+| **RFC 3227** | DFIR: order of volatility governing live collection |
+| **CVSS v3.1** | DFIR: base metrics, scoring, and vector construction |
+| **DoD 8140 / DCWF** (DoDM 8140.03) | SOC programme: the primary tiering standard, work roles 511 / 531 / 141 |
+| **NICE** (NIST SP 800-181r1) | SOC programme: assessable Task, Knowledge and Skill statements |
+| **SFIA** | SOC programme: responsibility and autonomy levels |
+
+Each campaign page carries its own alignment table. The ATT&CK mapping is a
+technique-level correspondence describing what a student actually performs, not
+a formal control mapping.
 
 ---
 
@@ -102,6 +146,9 @@ design problem rather than an afterthought. Four constraints shaped every one:
 - Answer keys, accepted values, and walkthroughs
 - The full mission list. Block structure and counts are published; the 127
   individual task statements are not, because they are live questions
+- All assessment content. For the SOC programme only the architecture and its
+  framework grounding are documented: no mission structure, scenario, estate or
+  difficulty arithmetic
 - Platform workbooks, build scripts, and telemetry generators
 - Credentials, machine images, and internal addressing
 - Course slide decks, student handouts and written assessments
