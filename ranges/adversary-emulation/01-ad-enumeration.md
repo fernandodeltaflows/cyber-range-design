@@ -1,7 +1,12 @@
 # AD Enumeration & Path Discovery
 
 **Range:** Adversary emulation · **Day:** 1 of 3 · **Duration:** 4 hours
-**Difficulty:** Medium · **Missions:** 19
+**Difficulty:** Medium · **Missions:** 19 · **Stream:** Red / active defense
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/ae-01-ad-enumeration-dark.svg">
+  <img alt="AD Enumeration and Path Discovery progression" src="../../diagrams/ae-01-ad-enumeration-light.svg" width="760">
+</picture>
 
 ## Scenario
 
@@ -13,30 +18,64 @@ The task is the one that opens every real engagement: work out where you are,
 what the domain looks like from here, and which routes exist between this
 foothold and anything that matters.
 
-## Learning objectives
+## Objectives
 
-- Explain PowerShell's role in authorised AD enumeration and path discovery
-- Automate host and domain reconnaissance using built-in PowerShell
-- Enumerate a domain with PowerView to the point of reading its trust and
-  privilege relationships
-- Collect and interpret graph data to identify routes from a foothold toward
-  high-value targets
-- Critically review AI-generated PowerShell before running it
-- Describe what each of these activities looks like to a defender
+By the end of the campaign the student can:
 
-## Environment
+- Explain PowerShell's execution model and its role in authorised enumeration
+- Profile a Windows host from a standard-user context: identity, privileges,
+  installed software, running services and the identities they run as
+- Enumerate an Active Directory domain: users, groups, computers, trusts,
+  service principal names and ACL relationships
+- Collect graph data and interpret privilege relationships as routes
+- Judge which of several available routes is worth taking, and which single
+  relationship a defender should remove
+- Review AI-generated PowerShell critically before executing it
+- Describe what each activity above looks like in defender telemetry
+
+## Technical scope
+
+**Environment**
 
 | Role | Purpose |
 |---|---|
 | Domain controller | The directory the student enumerates |
-| Member workstation | The student's starting foothold |
+| Member workstation | The student's foothold, entered as a standard domain user |
 | Servers | Supply the privilege relationships that make path discovery non-trivial |
-| Operator host | Tooling workstation the student launches from |
+| Operator host | The tooling workstation the student launches from |
 
-The student begins as a standard domain user with interactive access to the
-foothold only. Credentials are issued at delivery and are not published.
+**What the student works with**
 
-## Structure
+Local host state (security context and token groups, service configuration and
+run-as identities, local administrators, OS build), directory objects (user,
+group and computer populations, domain and controller identity, service
+principal names, discretionary ACLs), and the relationship graph derived from
+them (session, local-admin and object-control edges).
+
+**Operations required**
+
+- Interrogate the local security context and read a token's group membership
+- Profile a host through CIM/WMI and service configuration rather than by
+  reading files
+- Query directory objects at scale and filter them to the ones that carry
+  privilege
+- Identify accounts whose configuration exposes them, including service
+  identities registered with SPNs
+- Read discretionary ACLs and recognise which rights confer effective control
+- Run a graph collector and interpret the resulting relationship data
+- Reason from the graph to a route, and from a route to a defensive control
+
+**Tooling**
+
+Built-in PowerShell and CIM/WMI, PowerView, SharpHound, BloodHound.
+
+**Assumed knowledge**
+
+Day-1 theory: PowerShell language fundamentals, the pipeline and object model,
+execution policy and script blocks. Basic familiarity with Active Directory
+concepts.
+
+## Structure and progression
 
 | Block | Focus | Missions |
 |---|---|---|
@@ -44,64 +83,87 @@ foothold only. Credentials are issued at delivery and are not published.
 | B | Domain enumeration with PowerView | 8 |
 | C | Graph collection and lateral-movement path discovery | 5 |
 
-**Block A** stays on the machine the student is standing on: operating context,
-host identity, the services running and the identities they run as, and who
+The campaign moves outward in widening circles, and the ordering is the
+teaching content.
+
+**Block A stays on the machine the student is standing on.** Operating context,
+host identity, the services running and the identities behind them, and who
 administers the box. It closes by profiling a second host, which is the first
 time the student looks outward.
 
-**Block B** moves into the directory: sizing the user and computer populations,
-locating the controller, and finding the accounts and rights that matter -
-service accounts with SPNs, human domain admins, and the ACL right that turns
-an ordinary object into a route.
+**Block B moves into the directory.** Sizing the populations, locating the
+controller, and finding the accounts and rights that matter. This is where a
+flat list of objects starts to acquire structure.
 
-**Block C** converts a flat list of objects into a graph and reads it. The
-student collects with SharpHound, analyses in BloodHound, and identifies the
-pivot account, the AdminTo relationship and the GenericAll holder. The block
-ends on a defensive question: given this graph, which single edge would you cut?
+**Block C converts structure into a graph and reads it.** Collection, then
+analysis, then the identification of routes. The block ends on a defensive
+question rather than an offensive one: given this graph, which single edge
+would you cut?
 
-The final mission of the campaign hands the student AI-generated PowerShell and
-asks what is wrong with it.
+Blocks A and B use built-in PowerShell before any third-party tooling is
+introduced. The final mission of the campaign hands the student AI-generated
+PowerShell and asks what is wrong with it.
 
-## The chain
+## What makes this hard
 
-The ordering is the teaching content, not administrative convenience.
+**The graph is the difficulty, not the collection.** Running a collector is
+mechanical. Reading the resulting relationships and judging which route is worth
+taking is analytical, and it is where the campaign separates students who
+understand privilege relationships from students who can operate a tool.
 
-1. **Profile the host you are on** before querying anything else. You cannot
-   judge what the domain tells you without knowing your own position in it.
-2. **Establish domain context** - move from local to directory.
-3. **Enumerate principals and relationships** - users, groups, memberships,
-   and the rights between them.
-4. **Discover paths** - turn objects into a graph.
-5. **Interpret the graph** - the final step is analytical rather than
-   technical. A path that exists is not a path worth taking.
+**A path that exists is not a path worth taking.** Several routes are present.
+Choosing well requires reasoning about noise, privilege and reversibility, not
+just about reachability.
 
-Blocks A and B use built-in PowerShell before any tooling is introduced.
-A student who reaches for a tool before understanding what the operating system
-already exposes learns the tool rather than the technique, and is helpless the
-moment the tool is unavailable.
-
-## Tooling exercised
-
-Built-in PowerShell, PowerView, SharpHound, BloodHound.
+**The defensive cut inverts the whole exercise.** After three blocks of
+offensive work, the student is asked which relationship to remove. Answering
+requires understanding the graph well enough to reason about it from the other
+side, and it is the mission that most reliably distinguishes comprehension from
+operation.
 
 ## Design notes
 
 **Answers are environment-derived.** Every graded value has to be produced by
 querying the range. A mission answerable from prior knowledge measures what the
-student arrived with, not what the range taught.
+student arrived with rather than what the range taught.
 
-**The defensive cut is the point of Block C.** The graph missions could have
-ended at "find the path." Asking which edge to remove forces the student to
-reason about the relationship rather than follow the tool's own highlighting,
-and it is the mission that most reliably separates students who understand the
-graph from students who can operate BloodHound.
+**Built-ins before tooling, and it costs something.** Two blocks could have been
+completed faster with PowerView throughout. The slower path is deliberate: a
+student who reaches for a tool before understanding what the operating system
+already exposes learns the tool, and is helpless the moment it is blocked or
+unavailable.
 
-**Difficulty comes from analysis, not obscurity.** The intended hard step is
-reading the path graph and judging which route is worth taking. Difficulty
-manufactured by hiding things is fragile: it disappears the moment one student
-tells another where to look.
+**Difficulty comes from analysis, not obscurity.** Nothing is hidden to create
+difficulty. Difficulty manufactured by hiding things is fragile, because it
+disappears the moment one student tells another where to look.
 
----
+**Wrong routes are rejectable from evidence.** Where the campaign presents a
+plausible but inferior path, the student can rule it out from the data rather
+than by guessing what the author intended. A decoy that can only be rejected by
+second-guessing the designer is a defect, not difficulty.
+
+## Why this matters operationally
+
+**Directory enumeration is the universal first move.** Every intrusion that
+reaches an Active Directory environment answers the same questions the student
+answers here: who am I, what can I reach, and what is worth reaching. The
+relationships a graph collector surfaces are the same ones that turn a foothold
+into domain compromise.
+
+**The tradecraft is native machinery.** Directory queries are what domain-joined
+machines do continuously. That is what makes enumeration attractive to an
+adversary and hard for a defender: the traffic is indistinguishable from normal
+operation without volume and sequence analysis.
+
+**Service accounts with SPNs are a standing exposure.** They exist in nearly
+every estate, they are frequently over-privileged, and they are the reason
+Kerberos-based credential attacks remain effective. Finding them is
+reconnaissance; understanding why they matter is the lesson.
+
+**Graph thinking is now the defender's job too.** Blue teams increasingly run
+the same collectors to find and remove the paths before an adversary uses them.
+A student who can read the graph offensively can read it defensively, which is
+exactly what the closing mission tests.
 
 ## Framework alignment
 
@@ -120,6 +182,13 @@ a formal control mapping.
 | Discovery | T1482 Domain Trust Discovery |
 | Execution | T1059.001 Command and Scripting Interpreter: PowerShell |
 
-The defensive counterpart is covered throughout: each technique is paired with
-the telemetry it produces, which is where MITRE D3FEND and the detection side of
-the DFIR range meet this one.
+**MITRE D3FEND** supplies the defensive counterpart throughout: each technique is
+paired with the observation surface it exposes, which is what makes the closing
+defensive mission answerable.
+
+---
+
+> **Confidentiality.** These cyber ranges were designed and built for private
+> clients. This page documents design and architecture only. Scenario content,
+> mission structure, answer keys and walkthroughs remain confidential, and are
+> neither published here nor available on request.

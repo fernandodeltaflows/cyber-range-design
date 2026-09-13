@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 402" width="760" height="402" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
+  <rect width="760" height="402" fill="#0d1117"/>
+  <text x="380" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#e6edf3">SOC II - Intrusion Containment</text>
+  <text x="380" y="58" text-anchor="middle" font-size="12.5" fill="#8b949e">2 hours · Medium, Hard peak · Electricity distribution</text>
+  <rect x="30.0" y="92" width="217.3" height="88" rx="6" fill="#14202e" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="138.7" y="122" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">Take the handover</text>
+  <path d="M 251.3 136 L 267.3 136" stroke="#484f58" stroke-width="2"/>
+  <path d="M 267.3 136 l -5 -4 l 0 8 z" fill="#484f58"/>
+  <rect x="271.3" y="92" width="217.3" height="88" rx="6" fill="#14202e" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="380.0" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">Reconstruct the post-foothold</text>
+  <text x="380.0" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">chain</text>
+  <path d="M 492.7 136 L 508.7 136" stroke="#484f58" stroke-width="2"/>
+  <path d="M 508.7 136 l -5 -4 l 0 8 z" fill="#484f58"/>
+  <rect x="512.7" y="92" width="217.3" height="88" rx="6" fill="#14202e" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="621.3" y="122" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">Prove the movement, hop by hop</text>
+  <rect x="30.0" y="210" width="217.3" height="88" rx="6" fill="#14202e" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="138.7" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">Collection and staging</text>
+  <path d="M 251.3 254 L 267.3 254" stroke="#484f58" stroke-width="2"/>
+  <path d="M 267.3 254 l -5 -4 l 0 8 z" fill="#484f58"/>
+  <rect x="271.3" y="210" width="217.3" height="88" rx="6" fill="#2b1d12" stroke="#d29922" stroke-width="1.5"/>
+  <text x="380.0" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">Characterise both channels</text>
+  <path d="M 492.7 254 L 508.7 254" stroke="#484f58" stroke-width="2"/>
+  <path d="M 508.7 254 l -5 -4 l 0 8 z" fill="#484f58"/>
+  <rect x="512.7" y="210" width="217.3" height="88" rx="6" fill="#2b1d12" stroke="#d29922" stroke-width="1.5"/>
+  <text x="621.3" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e6edf3">Bound the incident, contain</text>
+  <rect x="30" y="322" width="700" height="46" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1.5"/>
+  <text x="380" y="350" text-anchor="middle" font-size="12" fill="#8b949e">Starting position: a triaged foothold · Tier I handed over, not repeated</text>
+</svg>

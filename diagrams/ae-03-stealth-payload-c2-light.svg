@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 402" width="760" height="402" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
+  <rect width="760" height="402" fill="#ffffff"/>
+  <text x="380" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">Stealth, Payload Handling and C2</text>
+  <text x="380" y="58" text-anchor="middle" font-size="12.5" fill="#57606a">22 missions · 4 hours · Medium</text>
+  <rect x="30.0" y="92" width="217.3" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="138.7" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Code inspection &amp; script-block</text>
+  <text x="138.7" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">logging</text>
+  <text x="138.7" y="164" text-anchor="middle" font-size="11.5" fill="#5b7a9e" font-weight="600">Module 1 · 5</text>
+  <path d="M 251.3 136 L 267.3 136" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 267.3 136 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="271.3" y="92" width="217.3" height="88" rx="6" fill="#fdf0e6" stroke="#c98a4b" stroke-width="1.5"/>
+  <text x="380.0" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Review of AI-generated</text>
+  <text x="380.0" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">PowerShell</text>
+  <text x="380.0" y="164" text-anchor="middle" font-size="11.5" fill="#c98a4b" font-weight="600">Module 3 · 5</text>
+  <path d="M 492.7 136 L 508.7 136" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 508.7 136 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="512.7" y="92" width="217.3" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="621.3" y="122" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">In-memory execution</text>
+  <text x="621.3" y="164" text-anchor="middle" font-size="11.5" fill="#5b7a9e" font-weight="600">Module 4 · 3</text>
+  <rect x="30.0" y="210" width="217.3" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="138.7" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Obfuscation</text>
+  <text x="138.7" y="282" text-anchor="middle" font-size="11.5" fill="#5b7a9e" font-weight="600">Module 5 · 2</text>
+  <path d="M 251.3 254 L 267.3 254" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 267.3 254 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="271.3" y="210" width="217.3" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="380.0" y="240" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">C2 framework integration</text>
+  <text x="380.0" y="282" text-anchor="middle" font-size="11.5" fill="#5b7a9e" font-weight="600">Module 6 · 4</text>
+  <path d="M 492.7 254 L 508.7 254" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 508.7 254 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="512.7" y="210" width="217.3" height="88" rx="6" fill="#fdf0e6" stroke="#c98a4b" stroke-width="1.5"/>
+  <text x="621.3" y="232" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">OPSEC, cleanup &amp; detection</text>
+  <text x="621.3" y="248" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">report</text>
+  <text x="621.3" y="282" text-anchor="middle" font-size="11.5" fill="#c98a4b" font-weight="600">Module 7 · 3</text>
+  <rect x="30" y="322" width="700" height="46" rx="6" fill="#f5f5f5" stroke="#b0b0b0" stroke-width="1.5"/>
+  <text x="380" y="350" text-anchor="middle" font-size="12" fill="#57606a">Confirm the watcher before evading it · terminates in a detection report</text>
+</svg>

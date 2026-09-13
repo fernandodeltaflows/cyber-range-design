@@ -1,27 +1,73 @@
 # Movement, Privilege Escalation, Persistence
 
 **Range:** Adversary emulation · **Day:** 2 of 3 · **Duration:** 4 hours
-**Difficulty:** Medium · **Missions:** 26
+**Difficulty:** Medium · **Missions:** 26 · **Stream:** Red / active defense
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/ae-02-movement-privesc-persistence-dark.svg">
+  <img alt="Movement, Privilege Escalation and Persistence progression" src="../../diagrams/ae-02-movement-privesc-persistence-light.svg" width="760">
+</picture>
 
 ## Scenario
 
-The student begins from the position Day 1 established: a mapped domain, a
-known set of routes, and a low-privilege foothold. The question is no longer
-where to go but how to get there, what to do on arrival, and how to still be
-there tomorrow.
+The student begins from the position Day 1 established: a mapped domain, a known
+set of routes, and a low-privilege foothold. The question is no longer where to
+go but how to get there, what to do on arrival, and how to still be there
+tomorrow.
 
-## Learning objectives
+## Objectives
 
 - Analyse identity, token and cached credential material on a compromised host
-- Move laterally between hosts using service execution, WMI and WinRM, and
-  choose between them on operational grounds
-- Simulate privilege escalation by identifying and validating a misconfiguration
-- Establish persistence by three mechanisms and describe the telemetry each
-  produces
+- Recover credential material and reuse it without re-authenticating in the
+  noisiest way available
+- Move laterally by service execution, WMI and WinRM, and choose between them on
+  operational grounds
+- Identify, profile and validate a privilege-escalation path arising from a
+  service misconfiguration
+- Establish persistence by three distinct mechanisms and describe the telemetry
+  signature each produces
 - Verify that a host has been returned to a clean state
-- Critically review AI-generated persistence code
+- Review AI-generated persistence code critically before executing it
 
-## Structure
+## Technical scope
+
+**Environment**
+
+The Day-1 domain, entered from the same foothold. A second workstation and at
+least one server are reachable, and the estate carries a deliberate,
+documented service misconfiguration that the escalation module targets.
+
+**What the student works with**
+
+Access tokens and their privilege sets, cached Kerberos material, service
+account context on the host, remote execution channels, and the three
+persistence surfaces Windows exposes: the registry, the task scheduler, and WMI
+event subscription.
+
+**Operations required**
+
+- Distinguish a primary token from an impersonation token, and enumerate the
+  privileges each carries
+- Inspect cached Kerberos material and reason about what it permits
+- Recover credential material available in the host's context
+- Execute remotely over three distinct channels and compare their behaviour
+- Run automated privilege-escalation checks, then validate a finding manually
+  rather than trusting the tool's verdict
+- Profile a misconfigured service to the point of proving the escalation is real
+- Implant persistence three ways, including the three-component WMI eventing
+  construct
+- Enumerate and remove persistence, then prove removal
+
+**Tooling**
+
+Built-in PowerShell, PowerUp, WinRM and WMI remoting, service control tooling.
+
+**Assumed knowledge**
+
+Day 1 completed: host and domain enumeration, path discovery, and the ability to
+read a privilege relationship.
+
+## Structure and progression
 
 | Module | Focus | Missions |
 |---|---|---|
@@ -30,55 +76,84 @@ there tomorrow.
 | 3 | Privilege-escalation simulation with PowerUp | 6 |
 | 4 | Persistence: registry, scheduled task, WMI eventing | 7 |
 
-**Module 1** establishes what the student actually holds: primary versus
-impersonation tokens, the privileges on them, cached Kerberos material, and the
-service identities present on the host. Movement without this is guesswork.
+**Module 1 establishes what the student actually holds.** Movement without
+knowing your own token, privileges and cached material is guesswork.
 
-**Module 2** is the core of the day. The student recovers a movement
-credential, then moves by more than one channel and compares them. The module
-deliberately includes a mission on which channel is quietest and one on
-validating the tooling before use.
+**Module 2 is the core of the day.** The student recovers a movement credential,
+then moves by more than one channel and compares them. It deliberately includes
+a mission on which channel is quietest, and one on validating tooling before
+use.
 
-**Module 3** runs automated checks, finds the writable path, profiles the
-abusable service and validates the escalation. It closes on validating before
-acting, which is the module's real lesson.
+**Module 3 escalates.** Automated checks, then the writable path, then profiling
+the abusable service, then validated escalation. It closes on validating before
+acting, which is the module's actual lesson.
 
-**Module 4** establishes persistence three ways and, critically, ends by
-proving the host is clean again. The final mission reviews AI-generated
-persistence code.
+**Module 4 persists, then cleans up.** Three mechanisms, then proof the host is
+clean. The final mission reviews AI-generated persistence code.
 
-## The chain
+The ordering follows dependency: movement needs credential material, escalation
+is more useful once more than one host is reachable, and persistence is what you
+do once you have something worth keeping.
 
-Movement depends on credential material, so Module 1 precedes Module 2.
-Escalation is more useful once you can reach more than one host, so Module 3
-follows Module 2. Persistence is last because it is the thing you do once you
-have something worth keeping.
+## What makes this hard
 
-The cleanup mission is not an afterthought. A student who establishes
-persistence and cannot demonstrably remove it has not finished the exercise,
-and on a real engagement would have left a liability behind.
+**Choosing a channel, not just using one.** Executing over WinRM is mechanical.
+Deciding that WinRM is the wrong choice here, and being able to say why in terms
+of what each channel emits, is the assessed skill.
 
-## Tooling exercised
+**Validation before action.** PowerUp reports candidate escalations. Some are not
+real. A student who acts on the tool's output without confirming the
+precondition learns to trust a scanner, which is the opposite of the intended
+lesson.
 
-Built-in PowerShell, PowerUp, WMI and WinRM remoting, service control tooling.
+**The WMI eventing triad.** Persistence via WMI event subscription requires three
+components that only function together. It is the most conceptually demanding
+mechanism in the campaign and the least familiar to most students.
+
+**Proving a host is clean.** Removal is easy to claim and hard to demonstrate.
+The mission requires enumeration rather than assertion, and it is the one
+students most often get wrong on the first attempt.
 
 ## Design notes
 
 **Three channels, not one.** Teaching a single lateral movement technique
-produces students who use it everywhere. Teaching three, then asking which is
-quietest, produces students who choose. The comparison mission is worth more
-than any of the three execution missions individually.
+produces students who use it everywhere. Teaching three and then asking which is
+quietest produces students who choose. The comparison mission is worth more than
+any of the three execution missions individually.
 
 **Escalation is simulated, and labelled as such.** The environment carries a
 deliberate, documented misconfiguration. The student practises identification
-and validation rather than exploit development, which is the skill the module
-is actually for.
+and validation rather than exploit development, which is the skill the module is
+actually for.
 
-**Prove the host is clean.** This mission exists because it is the one students
-skip. Including it as a graded item makes cleanup part of the technique rather
-than an optional courtesy.
+**Cleanup is graded, because it is the step students skip.** Including it as a
+scored mission makes it part of the technique rather than an optional courtesy.
+On a real engagement, persistence you cannot remove is a liability you leave with
+the client.
 
----
+**Persistence is paired with its telemetry.** Each mechanism is taught alongside
+what it writes to defender-visible logs, so the student leaves able to argue both
+sides.
+
+## Why this matters operationally
+
+**Living-off-the-land is the norm.** WMI, WinRM, scheduled tasks and registry
+autoruns are native administrative machinery. That is exactly what makes them
+attractive to an adversary and hard for a defender: the same event that indicates
+compromise also indicates a Tuesday afternoon.
+
+**Persistence is where an intrusion becomes an incident.** An intrusion that is
+evicted is an alert. One that survives eviction is a breach. Three mechanisms are
+taught because defenders who check only the obvious one develop a blind spot that
+adversaries rely on.
+
+**Credential reuse beats credential cracking.** Most lateral movement in real
+intrusions uses material already present on the host. The module reflects that
+by starting with what the token and cache already hold.
+
+**Service misconfiguration is a durable, unglamorous reality.** Weak service
+permissions and writable paths persist in estates for years because nothing
+alerts on them. Finding one is routine work that remains effective.
 
 ## Framework alignment
 
@@ -96,6 +171,13 @@ than an optional courtesy.
 | Persistence | T1546.003 Event Triggered Execution: WMI Event Subscription |
 | Persistence | T1543.003 Create or Modify System Process: Windows Service |
 
-Three persistence mechanisms are taught rather than one, and each is paired with
-the distinct telemetry signature it leaves. The campaign closes on verifying
-removal, which is the D3FEND side of the same content.
+**MITRE D3FEND** covers the removal side: each persistence mechanism is paired
+with the enumeration technique that finds it, which is what the cleanup mission
+assesses.
+
+---
+
+> **Confidentiality.** These cyber ranges were designed and built for private
+> clients. This page documents design and architecture only. Scenario content,
+> mission structure, answer keys and walkthroughs remain confidential, and are
+> neither published here nor available on request.
