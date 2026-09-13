@@ -63,3 +63,15 @@ answer rather than an obvious one, and the reasoning is the assessed content.
 **Deprecated tooling is taught with its successor.** The collection uses a tool
 the student will meet on older estates, and a mission asks what replaced it.
 Teaching only the modern tool leaves a student stuck on a 2012 server.
+
+---
+
+## Framework alignment
+
+| Standard | Where it is used |
+|---|---|
+| **RFC 3227** Guidelines for Evidence Collection and Archiving | Order of volatility governs the capture sequence |
+| **ISO/IEC 27037** | Acquisition and preservation of volatile evidence |
+| **NIST SP 800-61** | Containment as a life-cycle phase with an evidence cost |
+| **MITRE ATT&CK** | The intruder activity located spans Persistence and Command and Control |
+| **NICE / DCWF 531** Cyber Defense Incident Responder | The work role this campaign assesses against |
