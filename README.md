@@ -1,12 +1,14 @@
 # Cyber Range Design
 
 Design documentation for hands-on cyber security ranges I designed and built:
-two training ranges, one offensive and one defensive, and a three-tier SOC
-analyst assessment programme.
+two training ranges, one offensive and one defensive, a three-tier SOC
+analyst assessment programme, and a three-day cyber crisis tabletop series.
 
-**8 training campaigns, 127 graded missions, and a 3-tier assessment
-programme.** Built on a commercial cyber range platform for a national cyber
-security training programme.
+**8 training campaigns, 127 graded missions, a 3-tier assessment programme and
+3 crisis tabletop exercises.** The ranges and assessments are built on a
+commercial cyber range platform for a national cyber security training
+programme; the tabletop series runs as facilitated sessions for the same
+programme.
 
 **Answer keys and walkthroughs are deliberately not published.** These courses
 are delivered commercially and the assessments are live. What is here is the
@@ -17,7 +19,7 @@ topology, and the reasoning behind them.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/portfolio-overview-dark.svg">
-  <img alt="Portfolio overview: two training ranges and a three-tier assessment programme" src="diagrams/portfolio-overview-light.svg" width="760">
+  <img alt="Portfolio overview: two training ranges, a three-tier assessment programme and a crisis tabletop series" src="diagrams/portfolio-overview-light.svg" width="760">
 </picture>
 
 ## The two ranges
@@ -70,6 +72,24 @@ page.
 
 ---
 
+### [Cyber crisis tabletop exercises](ranges/tabletop-exercises/) - 3 exercises
+
+The leadership side of the same incidents: facilitated exercises for the people
+who make the decisions during a crisis, rather than the people at the console.
+
+| Day | Exercise | Focus |
+|---|---|---|
+| 1 | [Capability and Classification](ranges/tabletop-exercises/01-capability-and-classification.md) | Map an incident response plan to the standards and write the rules for rating incidents |
+| 2 | [Ransomware Response](ranges/tabletop-exercises/02-ransomware-response.md) | Lead a staged ransomware incident, then decide alone on payment and notification |
+| 3 | [Capstone Close-out](ranges/tabletop-exercises/03-capstone-close-out.md) | Timeline, blameless review, board summary, regulator notice and response metrics |
+
+One organisation and one incident run through all three days. Team work and
+individual work are separated on purpose: incident command is assessed as a
+team, and the decisions a leader is accountable for are assessed one person at
+a time.
+
+---
+
 ## Why both
 
 The same person designed the range that emulates the intrusion and the range
@@ -106,6 +126,9 @@ that issued them.
 | **DoD 8140 / DCWF** (DoDM 8140.03) | SOC programme: the primary tiering standard, work roles 511 / 531 / 141 |
 | **NICE** (NIST SP 800-181r1) | SOC programme: assessable Task, Knowledge and Skill statements |
 | **SFIA** | SOC programme: responsibility and autonomy levels |
+| **NIST SP 800-61r3** and **NIST CSF 2.0** | Tabletop series: the incident response life cycle and the governance frame around it |
+| **ISO/IEC 27035** | Tabletop series: incident management phases and lessons learned |
+| **ISO 22361** | Tabletop series: when an incident becomes a crisis |
 
 Each campaign page carries its own alignment table. The ATT&CK mapping is a
 technique-level correspondence describing what a student actually performs, not
@@ -161,6 +184,8 @@ design problem rather than an afterthought. Four constraints shaped every one:
 - Platform workbooks, build scripts, and telemetry generators
 - Credentials, machine images, and internal addressing
 - Course slide decks, student handouts and written assessments
+- Tabletop facilitator notes, inject timing, model answers, worked examples and
+  the Day 3 incident record
 
 This documentation was authored from design sources rather than exported from
 delivery material, so nothing withheld is recoverable from what is here.

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 284" width="760" height="284" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
+  <rect width="760" height="284" fill="#ffffff"/>
+  <text x="380" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">Cyber Crisis Tabletop Series</text>
+  <text x="380" y="58" text-anchor="middle" font-size="12.5" fill="#57606a">3 days · one running incident · cyber leaders</text>
+  <rect x="30.0" y="92" width="217.3" height="88" rx="6" fill="#eef2f7" stroke="#5b7a9e" stroke-width="1.5"/>
+  <text x="138.7" y="132.0" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Day 1</text>
+  <text x="138.7" y="148.0" text-anchor="middle" font-size="11.5" fill="#57606a">Build and classify</text>
+  <path d="M 251.3 138 L 267.3 138" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 267.3 138 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="271.3" y="92" width="217.3" height="88" rx="6" fill="#fdf0e6" stroke="#c98a4b" stroke-width="1.5"/>
+  <text x="380.0" y="132.0" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Day 2</text>
+  <text x="380.0" y="148.0" text-anchor="middle" font-size="11.5" fill="#57606a">Lead the live response</text>
+  <path d="M 492.7 138 L 508.7 138" stroke="#9aa4b2" stroke-width="2"/>
+  <path d="M 508.7 138 l -5 -4 l 0 8 z" fill="#9aa4b2"/>
+  <rect x="512.7" y="92" width="217.3" height="88" rx="6" fill="#e9f1ea" stroke="#5f8a62" stroke-width="1.5"/>
+  <text x="621.3" y="132.0" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a1a1a">Day 3</text>
+  <text x="621.3" y="148.0" text-anchor="middle" font-size="11.5" fill="#57606a">Close it out</text>
+  <rect x="30" y="204" width="700" height="46" rx="6" fill="#f5f5f5" stroke="#b0b0b0" stroke-width="1.5"/>
+  <text x="380" y="232" text-anchor="middle" font-size="12" fill="#57606a">The incident managed on Day 2 is the one reported and reviewed on Day 3</text>
+</svg>
