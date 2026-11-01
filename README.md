@@ -1,11 +1,11 @@
 # Cyber Range Design
 
-Design documentation for hands-on cyber security ranges I designed and built:
-two training ranges, one offensive and one defensive, a three-tier SOC
-analyst assessment programme, and a three-day cyber crisis tabletop series.
+Design documentation for cyber security exercises I designed and built: a
+three-day cyber crisis tabletop series, a three-tier SOC analyst assessment
+programme, and two training ranges, one offensive and one defensive.
 
-**8 training campaigns, 127 graded missions, a 3-tier assessment programme and
-3 crisis tabletop exercises.** The ranges and assessments are built on a
+**3 crisis tabletop exercises, a 3-tier assessment programme, and 8 training
+campaigns with 127 graded missions.** The assessments and ranges are built on a
 commercial cyber range platform for a national cyber security training
 programme; the tabletop series runs as facilitated sessions for the same
 programme.
@@ -19,10 +19,50 @@ topology, and the reasoning behind them.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/portfolio-overview-dark.svg">
-  <img alt="Portfolio overview: two training ranges, a three-tier assessment programme and a crisis tabletop series" src="diagrams/portfolio-overview-light.svg" width="760">
+  <img alt="Portfolio overview: a crisis tabletop series, a three-tier assessment programme and two training ranges" src="diagrams/portfolio-overview-light.svg" width="760">
 </picture>
 
-## The two ranges
+## [Cyber crisis tabletop exercises](ranges/tabletop-exercises/) - 3 exercises
+
+Facilitated exercises for the people who make the decisions during a cyber
+crisis, rather than the people at the console.
+
+| Day | Exercise | Focus |
+|---|---|---|
+| 1 | [Capability and Classification](ranges/tabletop-exercises/01-capability-and-classification.md) | Map an incident response plan to the standards and write the rules for rating incidents |
+| 2 | [Ransomware Response](ranges/tabletop-exercises/02-ransomware-response.md) | Lead a staged ransomware incident, then decide alone on payment and notification |
+| 3 | [Capstone Close-out](ranges/tabletop-exercises/03-capstone-close-out.md) | Timeline, blameless review, board summary, regulator notice and response metrics |
+
+One organisation and one incident run through all three days. Team work and
+individual work are separated on purpose: incident command is assessed as a
+team, and the decisions a leader is accountable for are assessed one person at
+a time.
+
+---
+
+## [SOC analyst assessment programme](ranges/soc-assessments/) - 3 tiers
+
+A separate product from the training ranges: an instrument that **measures**
+whether an analyst can find an intrusion, rather than one that teaches them to.
+
+| Tier | Assessment | Work role | Sector |
+|---|---|---|---|
+| I | [SIEM Intrusion Triage](ranges/soc-assessments/01-soc-i-siem-intrusion-triage.md) | DCWF 511 Cyber Defense Analyst | Financial services |
+| II | [Intrusion Containment](ranges/soc-assessments/02-soc-ii-intrusion-containment.md) | DCWF 531 Cyber Defense Incident Responder | Electricity distribution |
+| III | [Hunt & Attribution](ranges/soc-assessments/03-soc-iii-hunt-attribution.md) | DCWF 141 Threat/Warning Analyst | Telecommunications |
+
+Three two-hour, numerically scored assessments across three critical
+infrastructure sectors. What the candidate is handed at minute zero is the
+design: a detection, a foothold, or one external indicator and no incident.
+
+Tiered against **DoD 8140 / DCWF** rather than an invented scale, with NICE
+supplying the assessable task and skill statements. Architecture and framework
+grounding are documented; mission content is not, for the reasons given on that
+page.
+
+---
+
+## The two training ranges
 
 ### [Adversary emulation](ranges/adversary-emulation/) - 3 campaigns, 67 missions
 
@@ -50,46 +90,6 @@ the evidence it leaves behind. One continuity scenario across the week.
 
 ---
 
-### [SOC analyst assessment programme](ranges/soc-assessments/) - 3 tiers
-
-A separate product from the training ranges: an instrument that **measures**
-whether an analyst can find an intrusion, rather than one that teaches them to.
-
-| Tier | Assessment | Work role | Sector |
-|---|---|---|---|
-| I | [SIEM Intrusion Triage](ranges/soc-assessments/01-soc-i-siem-intrusion-triage.md) | DCWF 511 Cyber Defense Analyst | Financial services |
-| II | [Intrusion Containment](ranges/soc-assessments/02-soc-ii-intrusion-containment.md) | DCWF 531 Cyber Defense Incident Responder | Electricity distribution |
-| III | [Hunt & Attribution](ranges/soc-assessments/03-soc-iii-hunt-attribution.md) | DCWF 141 Threat/Warning Analyst | Telecommunications |
-
-Three two-hour, numerically scored assessments across three critical
-infrastructure sectors. What the candidate is handed at minute zero is the
-design: a detection, a foothold, or one external indicator and no incident.
-
-Tiered against **DoD 8140 / DCWF** rather than an invented scale, with NICE
-supplying the assessable task and skill statements. Architecture and framework
-grounding are documented; mission content is not, for the reasons given on that
-page.
-
----
-
-### [Cyber crisis tabletop exercises](ranges/tabletop-exercises/) - 3 exercises
-
-The leadership side of the same incidents: facilitated exercises for the people
-who make the decisions during a crisis, rather than the people at the console.
-
-| Day | Exercise | Focus |
-|---|---|---|
-| 1 | [Capability and Classification](ranges/tabletop-exercises/01-capability-and-classification.md) | Map an incident response plan to the standards and write the rules for rating incidents |
-| 2 | [Ransomware Response](ranges/tabletop-exercises/02-ransomware-response.md) | Lead a staged ransomware incident, then decide alone on payment and notification |
-| 3 | [Capstone Close-out](ranges/tabletop-exercises/03-capstone-close-out.md) | Timeline, blameless review, board summary, regulator notice and response metrics |
-
-One organisation and one incident run through all three days. Team work and
-individual work are separated on purpose: incident command is assessed as a
-team, and the decisions a leader is accountable for are assessed one person at
-a time.
-
----
-
 ## Why both
 
 The same person designed the range that emulates the intrusion and the range
@@ -110,25 +110,25 @@ sources would have caught it has learned half the lesson.
 
 ## Framework grounding
 
-Every range is written against published standards rather than an in-house
+Every exercise is written against published standards rather than an in-house
 scheme, so the competencies assessed mean something outside the organisation
 that issued them.
 
 | Framework | Where it is used |
 |---|---|
-| **MITRE ATT&CK** Enterprise | Adversary emulation: technique-level mapping on every campaign |
+| **NIST SP 800-61r3** and **NIST CSF 2.0** | Tabletop series: the incident response life cycle and the governance frame around it |
+| **ISO/IEC 27035** | Tabletop series: incident management phases and lessons learned |
+| **ISO 22361** | Tabletop series: when an incident becomes a crisis |
+| **DoD 8140 / DCWF** (DoDM 8140.03) | SOC programme: the primary tiering standard, work roles 511 / 531 / 141 |
+| **NICE** (NIST SP 800-181r1) | SOC programme: assessable Task, Knowledge and Skill statements |
+| **SFIA** | SOC programme: responsibility and autonomy levels |
 | **MITRE D3FEND** (v1.3.0) | The defensive counterpart, across DFIR and the assessment programme |
+| **MITRE ATT&CK** Enterprise | Adversary emulation: technique-level mapping on every campaign |
 | **NIST SP 800-61** | DFIR: the incident response life cycle and its phase boundaries |
 | **ISO/IEC 27037** | DFIR: identification, collection, acquisition and preservation of evidence |
 | **ACPO** Good Practice Guide | DFIR: the handling principles applied to live decisions |
 | **RFC 3227** | DFIR: order of volatility governing live collection |
 | **CVSS v3.1** | DFIR: base metrics, scoring, and vector construction |
-| **DoD 8140 / DCWF** (DoDM 8140.03) | SOC programme: the primary tiering standard, work roles 511 / 531 / 141 |
-| **NICE** (NIST SP 800-181r1) | SOC programme: assessable Task, Knowledge and Skill statements |
-| **SFIA** | SOC programme: responsibility and autonomy levels |
-| **NIST SP 800-61r3** and **NIST CSF 2.0** | Tabletop series: the incident response life cycle and the governance frame around it |
-| **ISO/IEC 27035** | Tabletop series: incident management phases and lessons learned |
-| **ISO 22361** | Tabletop series: when an incident becomes a crisis |
 
 Each campaign page carries its own alignment table. The ATT&CK mapping is a
 technique-level correspondence describing what a student actually performs, not
