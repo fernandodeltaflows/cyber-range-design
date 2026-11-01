@@ -1,12 +1,13 @@
 # Cyber Range Design
 
 Design documentation for cyber security exercises I designed and built: a
-three-day cyber crisis tabletop series, a three-tier SOC analyst assessment
-programme, red vs blue live exercises, and two training ranges, one offensive
-and one defensive.
+three-day cyber crisis tabletop series, red vs blue live exercises, a
+three-tier SOC analyst assessment programme, and two training ranges, one
+offensive and one defensive.
 
-**3 crisis tabletop exercises, a 3-tier assessment programme, 3 red vs blue live
-exercises and a CTF event, and 8 training campaigns with 127 graded missions.**
+**3 crisis tabletop exercises, 3 red vs blue live exercises and a CTF event, a
+3-tier assessment programme, and 8 training campaigns with 127 graded
+missions.**
 The assessments and ranges are built on a commercial cyber range platform for a
 national cyber security training programme, and the tabletop series runs as
 facilitated sessions for the same programme. The red vs blue exercises were
@@ -19,9 +20,23 @@ topology, and the reasoning behind them.
 
 ---
 
+## Contents
+
+| Section | What it is |
+|---|---|
+| [Cyber crisis tabletop exercises](ranges/tabletop-exercises/) | 3 facilitated exercises for the people who lead a cyber crisis |
+| [Red vs blue live exercises](ranges/red-blue-exercises/) | 3 live exercises where trainees attack an estate and then investigate it, plus a CTF event |
+| [SOC analyst assessment programme](ranges/soc-assessments/) | 3 scored, ranked tiers that measure whether an analyst can find an intrusion |
+| [Adversary emulation range](ranges/adversary-emulation/) | 3 offensive campaigns, 67 missions |
+| [DFIR and detection range](ranges/dfir/) | 5 defensive campaigns, 60 missions |
+
+On this page: [Why both](#why-both) · [Framework grounding](#framework-grounding) · [AI-generated code](#teaching-students-to-distrust-ai-generated-code) · [Design constraints](#design-constraints) · [What is not in this repository](#what-is-not-in-this-repository)
+
+---
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/portfolio-overview-dark.svg">
-  <img alt="Portfolio overview: a crisis tabletop series, a three-tier assessment programme, red vs blue live exercises and two training ranges" src="diagrams/portfolio-overview-light.svg" width="760">
+  <img alt="Portfolio overview: a crisis tabletop series, red vs blue live exercises, a three-tier assessment programme and two training ranges" src="diagrams/portfolio-overview-light.svg" width="760">
 </picture>
 
 ## [Cyber crisis tabletop exercises](ranges/tabletop-exercises/) - 3 exercises
@@ -39,6 +54,24 @@ One organisation and one incident run through all three days. Team work and
 individual work are separated on purpose: incident command is assessed as a
 team, and the decisions a leader is accountable for are assessed one person at
 a time.
+
+---
+
+## [Red vs blue live exercises](ranges/red-blue-exercises/) - 3 exercises and a CTF
+
+Live exercises on full Windows estates where trainees attack the estate and then
+investigate the evidence their own attack left behind.
+
+| # | Exercise | Led by | Focus |
+|---|---|---|---|
+| 1 | [Enterprise Intrusion Investigation](ranges/red-blue-exercises/01-enterprise-intrusion-investigation.md) | Blue | Reconstruct attack waves from endpoint telemetry and weeks of packet capture |
+| 2 | [Insider Threat to Domain Compromise](ranges/red-blue-exercises/02-insider-to-domain-compromise.md) | Red, then blue | Take a domain on an APT-modelled path, then find every step in the SIEM |
+| 3 | [Pivot into a Hardened Domain](ranges/red-blue-exercises/03-pivot-into-hardened-domain.md) | Red | Breach a second domain under a lockout policy, with exercise-control injects |
+| 4 | [Capture the Flag Event](ranges/red-blue-exercises/04-ctf-event.md) | Event | One-day scored event for about 100 players in 24 teams |
+
+Every host is imaged before and after the attack, so the blue phase works on a
+compromise that was actually performed. Instructors play the victim and a Green
+cell releases intelligence on request.
 
 ---
 
@@ -61,24 +94,6 @@ Tiered against **DoD 8140 / DCWF** rather than an invented scale, with NICE
 supplying the assessable task and skill statements. Architecture and framework
 grounding are documented; mission content is not, for the reasons given on that
 page.
-
----
-
-## [Red vs blue live exercises](ranges/red-blue-exercises/) - 3 exercises and a CTF
-
-Live exercises on full Windows estates where trainees attack the estate and then
-investigate the evidence their own attack left behind.
-
-| # | Exercise | Led by | Focus |
-|---|---|---|---|
-| 1 | [Enterprise Intrusion Investigation](ranges/red-blue-exercises/01-enterprise-intrusion-investigation.md) | Blue | Reconstruct attack waves from endpoint telemetry and weeks of packet capture |
-| 2 | [Insider Threat to Domain Compromise](ranges/red-blue-exercises/02-insider-to-domain-compromise.md) | Red, then blue | Take a domain on an APT-modelled path, then find every step in the SIEM |
-| 3 | [Pivot into a Hardened Domain](ranges/red-blue-exercises/03-pivot-into-hardened-domain.md) | Red | Breach a second domain under a lockout policy, with exercise-control injects |
-| 4 | [Capture the Flag Event](ranges/red-blue-exercises/04-ctf-event.md) | Event | One-day scored event for about 100 players in 24 teams |
-
-Every host is imaged before and after the attack, so the blue phase works on a
-compromise that was actually performed. Instructors play the victim and a Green
-cell releases intelligence on request.
 
 ---
 
