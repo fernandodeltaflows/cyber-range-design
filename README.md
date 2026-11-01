@@ -2,13 +2,15 @@
 
 Design documentation for cyber security exercises I designed and built: a
 three-day cyber crisis tabletop series, a three-tier SOC analyst assessment
-programme, and two training ranges, one offensive and one defensive.
+programme, red vs blue live exercises, and two training ranges, one offensive
+and one defensive.
 
-**3 crisis tabletop exercises, a 3-tier assessment programme, and 8 training
-campaigns with 127 graded missions.** The assessments and ranges are built on a
-commercial cyber range platform for a national cyber security training
-programme; the tabletop series runs as facilitated sessions for the same
-programme.
+**3 crisis tabletop exercises, a 3-tier assessment programme, 3 red vs blue live
+exercises and a CTF event, and 8 training campaigns with 127 graded missions.**
+The assessments and ranges are built on a commercial cyber range platform for a
+national cyber security training programme, and the tabletop series runs as
+facilitated sessions for the same programme. The red vs blue exercises were
+built for a government cyber academy.
 
 **Answer keys and walkthroughs are deliberately not published.** These courses
 are delivered commercially and the assessments are live. What is here is the
@@ -19,7 +21,7 @@ topology, and the reasoning behind them.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/portfolio-overview-dark.svg">
-  <img alt="Portfolio overview: a crisis tabletop series, a three-tier assessment programme and two training ranges" src="diagrams/portfolio-overview-light.svg" width="760">
+  <img alt="Portfolio overview: a crisis tabletop series, a three-tier assessment programme, red vs blue live exercises and two training ranges" src="diagrams/portfolio-overview-light.svg" width="760">
 </picture>
 
 ## [Cyber crisis tabletop exercises](ranges/tabletop-exercises/) - 3 exercises
@@ -59,6 +61,24 @@ Tiered against **DoD 8140 / DCWF** rather than an invented scale, with NICE
 supplying the assessable task and skill statements. Architecture and framework
 grounding are documented; mission content is not, for the reasons given on that
 page.
+
+---
+
+## [Red vs blue live exercises](ranges/red-blue-exercises/) - 3 exercises and a CTF
+
+Live exercises on full Windows estates where trainees attack the estate and then
+investigate the evidence their own attack left behind.
+
+| # | Exercise | Led by | Focus |
+|---|---|---|---|
+| 1 | [Enterprise Intrusion Investigation](ranges/red-blue-exercises/01-enterprise-intrusion-investigation.md) | Blue | Reconstruct attack waves from endpoint telemetry and weeks of packet capture |
+| 2 | [Insider Threat to Domain Compromise](ranges/red-blue-exercises/02-insider-to-domain-compromise.md) | Red, then blue | Take a domain on an APT-modelled path, then find every step in the SIEM |
+| 3 | [Pivot into a Hardened Domain](ranges/red-blue-exercises/03-pivot-into-hardened-domain.md) | Red | Breach a second domain under a lockout policy, with exercise-control injects |
+| 4 | [Capture the Flag Event](ranges/red-blue-exercises/04-ctf-event.md) | Event | One-day scored event for about 100 players in 24 teams |
+
+Every host is imaged before and after the attack, so the blue phase works on a
+compromise that was actually performed. Instructors play the victim and a Green
+cell releases intelligence on request.
 
 ---
 
@@ -123,7 +143,8 @@ that issued them.
 | **NICE** (NIST SP 800-181r1) | SOC programme: assessable Task, Knowledge and Skill statements |
 | **SFIA** | SOC programme: responsibility and autonomy levels |
 | **MITRE D3FEND** (v1.3.0) | The defensive counterpart, across DFIR and the assessment programme |
-| **MITRE ATT&CK** Enterprise | Adversary emulation: technique-level mapping on every campaign |
+| **MITRE ATT&CK** Enterprise | Adversary emulation and red vs blue exercises: technique-level mapping on every campaign and attack path |
+| **ATT&CK group profiles** (APT28, APT29) | Red vs blue exercises: the adversary model for the domain-compromise path |
 | **NIST SP 800-61** | DFIR: the incident response life cycle and its phase boundaries |
 | **ISO/IEC 27037** | DFIR: identification, collection, acquisition and preservation of evidence |
 | **ACPO** Good Practice Guide | DFIR: the handling principles applied to live decisions |
@@ -186,6 +207,8 @@ design problem rather than an afterthought. Four constraints shaped every one:
 - Course slide decks, student handouts and written assessments
 - Tabletop facilitator notes, inject timing, model answers, worked examples and
   the Day 3 incident record
+- Red vs blue estate names, addressing, accounts, command sequences, Green cell
+  inject content, CTF challenge content and results
 
 This documentation was authored from design sources rather than exported from
 delivery material, so nothing withheld is recoverable from what is here.
@@ -195,7 +218,7 @@ delivery material, so nothing withheld is recoverable from what is here.
 ## Licence
 
 Documentation licensed [CC BY 4.0](LICENSE). Published with the permission of
-the client for whom the courses were developed.
+the clients for whom the courses and exercises were developed.
 
 ---
 
