@@ -8,6 +8,8 @@ five disconnected exercises.
 practical sessions use other formats, a tabletop exercise and an
 instructor-led capstone, which are not documented here.
 
+**Built with the [Cyber Range Build System](../../README.md#the-cyber-range-build-system) method:** first versions of all five campaigns in 4 days, then deployed and used. The [guided tour](https://fernandodeltaflows.github.io/cyber-range-design/build-system-tour/) shows the stages on a made-up lab.
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/dfir-range-topology-dark.svg">
   <img alt="DFIR and detection range topology" src="../../diagrams/dfir-range-topology-light.svg" width="760">

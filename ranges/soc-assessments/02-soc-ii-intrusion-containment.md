@@ -4,6 +4,7 @@
 **Stream:** Blue team / defensive operations · **Format:** Challenge (gated)
 **Duration:** 2 hours · **Difficulty:** Medium, with a Hard peak
 **Sector:** Electricity distribution utility
+**Built with:** the [Cyber Range Build System](../../README.md#the-cyber-range-build-system) method · [guided tour](https://fernandodeltaflows.github.io/cyber-range-design/build-system-tour/), screen 13 (the blind solve)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/soc-02-containment-dark.svg">

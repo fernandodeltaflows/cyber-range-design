@@ -1,0 +1,1031 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cyber Range Build System Tour</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a presenter's tour. Left, a mock-up of the real program window that changes as you click; right, the narration (who did what), the files created and the factory proof. Back and Next at the bottom. */
+:root{
+  --bg:#f6f8fa; --surface:#ffffff; --surface-2:#eef1f6; --fg:#17202e; --muted:#566072; --faint:#8793a2; --border:#d7dee7;
+  --accent:#0d7a84; --accent-weak:#d6edef; --accent-fg:#0b5a62;
+  --you:#1f5fae; --you-weak:#e3ecf8; --ai:#6b4fb3; --ai-weak:#ece7f7; --gate:#2f7d5b; --gate-weak:#e0f0e8;
+  --sys:#566072; --sys-weak:#eceff3; --proof:#8f6417; --proof-weak:#f6eedb;
+  --font-sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* The program's own look, kept light in both themes like a screenshot of the real app */
+  --m-bg:#f6f7f9; --m-fg:#1d2330; --m-muted:#5d6677; --m-line:#d8dde6; --m-card:#ffffff; --m-accent:#1f5fae;
+  --m-ok:#1d7a46; --m-warn:#a86400; --m-bad:#b3261e; --m-bar:#1d2330; --m-barfg:#ffffff; --m-warnbg:#fff7e6; --m-okbg:#e7f5ec; --m-badbg:#fbe9e7;
+  --hot:#e8a317;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d131b; --surface:#141d27; --surface-2:#1a2430; --fg:#e7ecf3; --muted:#9aa6b5; --faint:#67727f; --border:#273340;
+  --accent:#3fb6c2; --accent-weak:#10323a; --accent-fg:#6fd3dd;
+  --you:#7fb0ef; --you-weak:#16263b; --ai:#b39ef0; --ai-weak:#241c3b; --gate:#5bbf90; --gate-weak:#132a22;
+  --sys:#9aa6b5; --sys-weak:#1c2530; --proof:#d2a35a; --proof-weak:#2e2614; --hot:#f0b84a; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0d131b; --surface:#141d27; --surface-2:#1a2430; --fg:#e7ecf3; --muted:#9aa6b5; --faint:#67727f; --border:#273340;
+  --accent:#3fb6c2; --accent-weak:#10323a; --accent-fg:#6fd3dd;
+  --you:#7fb0ef; --you-weak:#16263b; --ai:#b39ef0; --ai-weak:#241c3b; --gate:#5bbf90; --gate-weak:#132a22;
+  --sys:#9aa6b5; --sys-weak:#1c2530; --proof:#d2a35a; --proof-weak:#2e2614; --hot:#f0b84a; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;margin:0}
+button{font:inherit}
+/* One screen: header, the two panes, and the controls always in view; only the panes scroll, and the mock follows the action. */
+.app{display:flex;flex-direction:column;height:100%;overflow:hidden;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 10px;max-width:1440px;margin:0 auto}
+@media (max-width:980px),(max-height:560px){.app{height:auto;overflow:visible}}
+
+/* top bar */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;padding-block:8px 4px}
+.brand{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;min-width:0;flex:1 1 280px}
+.brand .eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fg);font-weight:600}
+.brand h1{font-size:18px;font-weight:600;margin:0;letter-spacing:-.005em;text-wrap:balance;order:-1}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{font-family:var(--font-mono);font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:5px 12px;cursor:pointer}
+.pill:hover{color:var(--fg);border-color:var(--faint)}
+.pill:focus-visible,.navbtn:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select.pill{appearance:none;padding-right:26px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 13px) 50%,calc(100% - 9px) 50%;background-size:4px 4px;background-repeat:no-repeat;max-width:260px}
+
+/* stage strip */
+.strip{display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;flex:0 0 auto}
+.strip::-webkit-scrollbar{display:none}
+.sbtn{flex:1 0 auto;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding:6px 10px;border-bottom:2px solid var(--border);white-space:nowrap}
+.sbtn.on{color:var(--accent-fg);border-color:var(--accent);font-weight:600}
+.sbtn.done{color:var(--muted);border-color:var(--gate)}
+
+/* main */
+.main{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(0,1fr);gap:14px;flex:1 1 auto;min-height:0}
+@media (max-width:980px){.main{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:980px),(max-height:560px){.main{flex:none}}
+
+/* the mock window */
+.win{background:var(--m-bg);color:var(--m-fg);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:0;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -16px rgba(20,30,50,.35)}
+.chrome{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#e9edf2;border-bottom:1px solid var(--m-line)}
+.dots{display:flex;gap:5px}.dots i{width:10px;height:10px;border-radius:5px;background:#c9d0d9;display:block}
+.url{flex:1;min-width:0;font-family:var(--font-mono);font-size:12px;color:var(--m-muted);background:#fff;border:1px solid var(--m-line);border-radius:6px;padding:3px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.local{font-family:var(--font-mono);font-size:10.5px;color:var(--m-ok);border:1px solid var(--m-ok);border-radius:4px;padding:1px 6px;white-space:nowrap}
+.mock{flex:1;overflow:auto;font-size:14px;line-height:1.45;min-height:0;position:relative;scroll-behavior:smooth}
+@media (max-width:980px),(max-height:560px){.mock{overflow:visible}}
+.m .changed{animation:changed 1.6s ease both}
+@keyframes changed{0%{box-shadow:0 0 0 3px rgba(232,163,23,.9)}100%{box-shadow:0 0 0 3px rgba(232,163,23,0)}}
+.mbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:9px 16px;background:var(--m-bar);color:var(--m-barfg);font-size:13.5px}
+.mbar b{font-weight:600}.mbar .tag{font-size:10.5px;background:var(--m-warn);padding:1px 6px;border-radius:3px;margin-left:4px;color:#fff}
+.mbar nav{display:flex;flex-wrap:wrap;gap:12px;opacity:.85}.mbar .muser{margin-left:auto;font-size:12.5px;opacity:.85}
+.mmain{padding:14px 16px 22px;max-width:980px}
+.m h2{font-size:15.5px;margin:0 0 8px}.m h3{font-size:14.5px;margin:0 0 6px}
+.m .muted{color:var(--m-muted)}.m .small{font-size:12.5px}.m .ok{color:var(--m-ok)}.m .warn{color:var(--m-warn)}.m .bad{color:var(--m-bad)}
+.m .card{background:var(--m-card);border:1px solid var(--m-line);border-radius:6px;padding:12px 14px;margin-bottom:12px}
+.m .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.m .mbtn{font:inherit;font-size:13.5px;padding:5px 12px;border:1px solid var(--m-line);background:#fff;color:var(--m-fg);border-radius:4px;cursor:default}
+.m .mbtn.primary{background:var(--m-accent);color:#fff;border-color:var(--m-accent);font-weight:600}
+.m .mbtn.hold{color:var(--m-bad);border-color:var(--m-bad);font-weight:600}
+.m .field{display:flex;flex-direction:column;gap:3px;margin-bottom:9px}
+.m .field label{font-size:12.5px;color:var(--m-muted);font-weight:600}
+.m .inp{font:inherit;font-size:13.5px;padding:5px 8px;border:1px solid var(--m-line);border-radius:4px;background:#fff;color:var(--m-fg);min-height:31px;white-space:pre-wrap;overflow-wrap:anywhere}
+.m .inp.area{min-height:52px}
+.m .inp:empty::before{content:attr(data-ph);color:#a3abb8}
+.m .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 14px}
+.m .warnbox{border-left:4px solid var(--m-warn);background:var(--m-warnbg);padding:8px 12px;margin:10px 0;border-radius:0 4px 4px 0}
+.m .okbox{border-left:4px solid var(--m-ok);background:var(--m-okbg);padding:8px 12px;margin:10px 0;border-radius:0 4px 4px 0}
+.m .badbox{border-left:4px solid var(--m-bad);background:var(--m-badbg);padding:8px 12px;margin:10px 0;border-radius:0 4px 4px 0}
+.m table{width:100%;border-collapse:collapse;background:#fff;font-size:13px}
+.m th,.m td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--m-line);vertical-align:top}
+.m th{font-size:12px;color:var(--m-muted);font-weight:600}
+.m .tblwrap{overflow-x:auto}
+.m code,.m .mono{font-family:var(--font-mono);font-size:12.5px}
+.m ul.tight{margin:6px 0 0;padding-left:20px}
+.m .pathbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin:2px 0 0;min-width:460px}
+.m .pstep{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;font-size:12px}
+.m .pstep .pdot{width:24px!important;height:24px!important;font-size:11.5px!important}
+.m .lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 10px;margin-top:8px;min-width:560px}
+.m .lanehead{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--m-muted);padding:4px 2px;border-bottom:2px solid var(--m-line);grid-row:1}
+.m .lc{background:#fff;border:1px solid var(--m-line);border-left-width:4px;border-radius:6px;padding:6px 9px;font-size:12.5px;line-height:1.4}
+.m .lc.l1{border-left-color:#1f5fae}.m .lc.l2{border-left-color:#6b4fb3;border-style:dashed solid dashed solid}.m .lc.l3{border-left-color:#2f7d5b}
+.m .lc b{display:block;font-size:11px;font-family:var(--font-mono);letter-spacing:.04em;color:var(--m-muted);font-weight:600}
+.m .ptrack{display:flex;align-items:center;width:100%}
+.m .seg{flex:1;height:4px;background:var(--m-line)}.m .seg.done{background:var(--m-ok)}.m .seg.none{background:transparent}
+.m .pdot{width:30px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-weight:600;border:2px solid var(--m-line);background:#fff;color:var(--m-muted);font-size:13px}
+.m .pstep.approved .pdot{background:var(--m-ok);border-color:var(--m-ok);color:#fff}
+.m .pstep.current .pdot{border-color:var(--m-accent);color:var(--m-accent)}
+.m .pstep.current .pname{color:var(--m-accent);font-weight:600}
+.m .stagecard{border:2px solid var(--m-accent);border-radius:8px;background:#fff;padding:12px 14px;margin-top:12px}
+.m .stagehead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.m .runcard{border:1px solid var(--m-line);border-radius:6px;padding:8px 10px;margin:8px 0;background:#fbfbfd;font-size:13px}
+.m .runcard .rhead{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.m .state{font-family:var(--font-mono);font-size:11.5px;padding:1px 7px;border-radius:10px;border:1px solid var(--m-line)}
+.m .state.running{color:var(--m-accent);border-color:var(--m-accent)}
+.m .state.done{color:var(--m-ok);border-color:var(--m-ok)}
+.m .rsteps{margin:6px 0 0;padding-left:18px;color:var(--m-muted);font-size:12.5px}
+.m .spin{display:inline-block;width:11px;height:11px;border:2px solid var(--m-accent);border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:-1px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.m .decision{border:1px solid var(--m-line);border-radius:6px;padding:8px 10px;margin:8px 0;background:#fff}
+.m .opt{font-size:13px;margin:2px 0}.m .opt.rec{color:var(--m-ok);font-weight:600}
+.m .chk{display:inline-flex;width:16px;height:16px;border:1.5px solid #8a93a3;border-radius:3px;align-items:center;justify-content:center;font-size:12px;line-height:1;background:#fff;flex:0 0 auto}
+.m .chk.on{background:var(--m-ok);border-color:var(--m-ok);color:#fff}
+.m .chk.on::after{content:"✓"}
+.m .tickrow{display:flex;gap:9px;align-items:flex-start;padding:6px 0;border-bottom:1px dashed var(--m-line)}
+.m .lvl{font-family:var(--font-mono);font-size:11px;padding:1px 6px;border-radius:3px;border:1px solid var(--m-line);white-space:nowrap}
+.m .lvl.L1{color:var(--m-ok);border-color:var(--m-ok)}.m .lvl.L2{color:var(--m-accent);border-color:var(--m-accent)}.m .lvl.L2P{color:var(--m-accent);border-color:var(--m-accent);border-style:dashed;font-weight:600}
+.m .lvl.MANUAL{color:var(--m-warn);border-color:var(--m-warn)}.m .lvl.CAPTURE{color:#6b4fb3;border-color:#6b4fb3}.m .lvl.CHECKPOINT{color:var(--m-bad);border-color:var(--m-bad)}
+.m .hidden-val{font-family:var(--font-mono);background:#eceff3;color:var(--m-muted);padding:1px 6px;border-radius:3px}
+.m .later{border:2px dashed #b7c0cc;border-radius:8px;padding:12px 14px;background:#fff;margin-top:12px}
+.m .later li{margin:4px 0}
+.m .flag{display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:10px;background:#f6eedb;color:#7a5612;border:1px solid #e3cf9f}
+.m .toast{position:sticky;bottom:10px;margin:10px auto 0;max-width:460px;background:#1d2330;color:#fff;font-size:12.5px;padding:7px 12px;border-radius:6px}
+.m .fadein{animation:fadein .45s ease both}
+@keyframes fadein{from{opacity:.25;transform:translateY(3px)}to{opacity:1;transform:none}}
+.m .newfile{animation:flash 1.4s ease both}
+@keyframes flash{0%{background:#fff3c4}100%{background:transparent}}
+.m .intro{padding:22px 20px}
+.m .intro .big{font-size:20px;font-weight:600;margin:0 0 6px;text-wrap:balance}
+.m .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:14px 0}
+.m .flow span{font-family:var(--font-mono);font-size:12.5px;background:#fff;border:1px solid var(--m-line);border-radius:5px;padding:5px 10px}
+.m .flow b{color:var(--m-muted);font-weight:400}
+.m .nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.m .num{background:#fff;border:1px solid var(--m-line);border-radius:6px;padding:10px 12px}
+.m .num .v{font-family:var(--font-mono);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.m .num .l{font-size:12.5px;color:var(--m-muted)}
+/* screen 1: the small ladder of lab depth by tier, centred at the bottom */
+.m .ladder{display:grid;grid-template-columns:auto auto auto auto;justify-content:center;column-gap:22px;row-gap:3px;width:max-content;max-width:100%;margin:14px auto 0;padding:9px 18px 10px;background:#fff;border:1px solid var(--m-line);border-radius:6px;font-size:13.5px;font-variant-numeric:tabular-nums}
+.m .ladder .lhd{grid-column:1/-1;text-align:center;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--m-muted);font-weight:600;margin-bottom:2px}
+.m .ladder .lrow{display:contents}
+.m .ladder .lrow b{font-family:var(--font-mono);font-size:12.5px;font-weight:600}
+.m .ladder .lrow span{color:var(--m-muted);white-space:nowrap}
+.m .ladder em{font-style:normal;font-family:var(--font-mono);font-weight:600;color:var(--m-fg);display:inline-block;min-width:2ch;text-align:right;margin-right:3px}
+@media (max-width:560px){.m .ladder{column-gap:10px;padding:8px 10px;font-size:12px;overflow-x:auto}}
+.m .cols3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.m .col{background:#fff;border:1px solid var(--m-line);border-radius:6px;padding:12px 14px}
+.m .col h3{font-size:13.5px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--font-mono)}
+.m .opts .col{padding:10px 12px}
+.m .opts .col h3{margin-bottom:2px}
+.m .ostat{font-family:var(--font-mono);font-size:11px;color:var(--m-muted);margin-bottom:4px}
+.m .odef{margin:0 0 6px}
+.m ul.pc{list-style:none;margin:0;padding:0;font-size:12.5px;line-height:1.4}
+.m ul.pc li{position:relative;padding-left:16px;margin:3px 0}
+.m ul.pc li::before{position:absolute;left:0;top:0;font-family:var(--font-mono);font-weight:600}
+.m ul.pc li.pro::before{content:"+";color:var(--m-ok)}
+.m ul.pc li.con::before{content:"\2212";color:var(--m-bad)}
+.m .col.built{border-top:4px solid var(--m-ok)}.m .col.proven{border-top:4px solid #c08a2b}.m .col.next{border-top:4px solid var(--m-accent)}
+
+/* the solve-rounds loop: three players, one step at a time */
+.m .loopwrap{display:grid;grid-template-columns:minmax(0,1fr) 46px minmax(0,1fr) 46px minmax(0,1fr);align-items:stretch;margin:14px 0 10px;min-width:520px}
+.m .lnode{border:2px solid var(--m-line);border-radius:10px;background:#fff;padding:10px 12px;display:flex;flex-direction:column;gap:3px;justify-content:center;text-align:center;opacity:.55;transition:opacity .35s,box-shadow .35s,transform .35s}
+.m .lnode .lname{font-weight:600;font-size:13.5px}
+.m .lnode .lsub{font-size:11.5px;color:var(--m-muted)}
+.m .lnode.build{border-color:#1f5fae}.m .lnode.you{border-color:#2f7d5b}.m .lnode.solver{border-color:#6b4fb3;border-style:dashed}
+.m .lnode.on{opacity:1;transform:translateY(-2px)}
+.m .lnode.build.on{box-shadow:0 0 0 4px rgba(31,95,174,.18);background:#eef4ff}
+.m .lnode.you.on{box-shadow:0 0 0 4px rgba(47,125,91,.18);background:#eef8f2}
+.m .lnode.solver.on{box-shadow:0 0 0 4px rgba(107,79,179,.18);background:#f4f0fc}
+.m .larrow{display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;color:#b7c0cc}
+.m .larrow.go{color:var(--m-fg);animation:fadein .4s ease both}
+.m .nowcard{min-height:92px;border:1px solid var(--m-line);border-left:5px solid var(--m-accent);border-radius:8px;background:#fff;padding:10px 14px}
+.m .nowcard.build{border-left-color:#1f5fae}.m .nowcard.you{border-left-color:#2f7d5b}.m .nowcard.solver{border-left-color:#6b4fb3}
+.m .nowcard .nstep{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--m-muted)}
+.m .nowcard .ntitle{font-size:16px;font-weight:600;margin:3px 0 4px}
+.m .nowcard .ngate{display:inline-block;margin-left:6px;font-family:var(--font-mono);font-size:10.5px;padding:1px 7px;border-radius:9px;background:#e0f0e8;color:#2f7d5b;vertical-align:2px}
+.m .ldots{display:flex;gap:6px;justify-content:center;margin-top:10px}
+.m .ldots i{width:9px;height:9px;border-radius:5px;background:var(--m-line);display:block}
+.m .ldots i.done{background:#8aa4c4}.m .ldots i.on{background:var(--m-accent)}
+.m .roundbar{margin-top:10px;padding:8px 12px;border-radius:8px;background:#f6eedb;color:#7a5612;border:1px solid #e3cf9f;font-size:13.5px}
+
+/* the hot spot: what to click next */
+.hot{outline:3px solid var(--hot)!important;outline-offset:2px;border-radius:5px;cursor:pointer!important;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,163,23,.55)}50%{box-shadow:0 0 0 7px rgba(232,163,23,0)}}
+
+/* diagram */
+.diag{overflow-x:auto;background:#fff;border:1px solid var(--m-line);border-radius:6px;padding:8px;margin-top:10px}
+.diag svg{display:block;min-width:620px;width:100%;height:auto}
+.diag .lane{fill:#f4f6f9;stroke:#d8dde6}
+.diag .box{fill:#ffffff;stroke:#9aa5b4;stroke-width:1.2}
+.diag .boxk{fill:#eef4ff;stroke:#1f5fae;stroke-width:1.2}
+.diag .boxp{fill:#f3f8f2;stroke:#2f7d5b;stroke-width:1.2}
+.diag text{fill:#1d2330;font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:12px}
+.diag .lt{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;fill:#5d6677}
+.diag .note{font-size:10.5px;fill:#5d6677}
+.diag .ln{stroke:#5d6677;stroke-width:1.4;fill:none}
+.diag .dash{stroke-dasharray:4 4}
+.diag .link{stroke-width:2.6;fill:none;transition:stroke .5s}
+.diag .link.closed{stroke:#b3261e;stroke-dasharray:6 5}
+.diag .link.open{stroke:#1d7a46}
+.diag .gate{fill:#fff;stroke-width:2}
+.diag .gate.closed{stroke:#b3261e}.diag .gate.open{stroke:#1d7a46}
+.diag .gtxt{font-size:10.5px;font-weight:600}
+.diag .gtxt.closed{fill:#b3261e}.diag .gtxt.open{fill:#1d7a46}
+.diag .arrowhead{fill:#5d6677}
+
+/* narration side */
+.side{display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0;overflow:auto}
+@media (max-width:980px),(max-height:560px){.side{overflow:visible}}
+.log li.new{font-weight:500}
+.who.admin{background:var(--proof-weak);color:var(--proof)}
+.who.solver{background:var(--ai-weak);color:var(--ai);outline:1px dashed var(--ai);outline-offset:-1px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.kicker{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-fg);font-weight:600}
+.side h2{font-size:19px;font-weight:600;margin:3px 0 6px;text-wrap:balance;line-height:1.25}
+.lead{color:var(--muted);font-size:14.5px;margin:0}
+.badge-proven{display:inline-block;margin-top:8px;font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;padding:3px 9px;border-radius:10px;background:var(--proof-weak);color:var(--proof);border:1px solid color-mix(in srgb,var(--proof) 40%,transparent)}
+.log{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.log li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.45;animation:fadein .4s ease both}
+.log li.old{opacity:.62}
+.who{flex:0 0 auto;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;padding:2px 7px;border-radius:4px;margin-top:2px;white-space:nowrap}
+.who.you{background:var(--you-weak);color:var(--you)}.who.ai{background:var(--ai-weak);color:var(--ai)}
+.who.gate{background:var(--gate-weak);color:var(--gate)}.who.sys{background:var(--sys-weak);color:var(--sys)}
+.who.proof{background:var(--proof-weak);color:var(--proof)}
+.hint{margin-top:12px;font-size:13.5px;color:var(--fg);background:var(--surface-2);border-radius:6px;padding:8px 10px;display:flex;gap:8px;align-items:baseline}
+.hint .k{font-family:var(--font-mono);font-size:11px;color:var(--hot);font-weight:600;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.files h3,.proof h3{font-size:12px;font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--font-mono);font-size:12px;background:var(--surface-2);color:var(--fg);border:1px solid var(--border);border-radius:5px;padding:4px 9px;cursor:pointer;text-align:left}
+.chip:hover{border-color:var(--accent)}
+.chip.on{border-color:var(--accent);background:var(--accent-weak)}
+.chip.factory{border-style:dashed}
+.chip.graded::after{content:" · graded";color:var(--muted)}
+.fileview{margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+.fileview .fname{font-family:var(--font-mono);font-size:13px;font-weight:600}
+.fileview p{margin:4px 0 8px;font-size:14px;color:var(--fg)}
+.fileview pre{margin:0;font-family:var(--font-mono);font-size:11.5px;line-height:1.5;background:var(--surface-2);color:var(--fg);border-radius:6px;padding:9px 11px;overflow-x:auto;white-space:pre}
+.proof{border-color:color-mix(in srgb,var(--proof) 45%,var(--border));background:color-mix(in srgb,var(--proof-weak) 55%,var(--surface))}
+.proof h3{color:var(--proof)}
+.proof ul{margin:0;padding-left:18px;font-size:14px}
+.proof li{margin:3px 0}
+.proof .src{font-size:12px;color:var(--muted);margin-top:6px}
+.more summary{cursor:pointer;font-size:13px;color:var(--accent-fg)}
+.more p{font-size:13.5px;color:var(--muted);margin:6px 0 0}
+
+/* bottom controls */
+.ctrl{display:flex;align-items:center;gap:12px;padding-top:10px;flex:0 0 auto}
+@media (max-width:980px),(max-height:560px){.ctrl{position:sticky;bottom:0;background:var(--bg);padding-bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5}}
+.navbtn{font-weight:600;font-size:14px;padding:9px 18px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--fg);cursor:pointer}
+.navbtn.next{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .navbtn.next{color:#0d131b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .navbtn.next{color:#0d131b}}
+.navbtn:disabled{opacity:.45;cursor:default}
+.progress{flex:1;display:flex;gap:4px;min-width:0}
+.progress i{flex:1;height:5px;border-radius:3px;background:var(--border);display:block}
+.progress i.done{background:var(--accent)}.progress i.on{background:var(--hot)}
+.counter{font-family:var(--font-mono);font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.foot{font-size:12px;color:var(--faint);padding-top:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <span class="eyebrow">Guided tour · made-up lab DEMO-1</span>
+      <h1>Cyber Range Build System</h1>
+    </div>
+    <div class="tools">
+      <select class="pill" id="jump" aria-label="Jump to a screen"></select>
+      <button class="pill" id="restart" type="button">Restart</button>
+      <button class="pill" id="fs" type="button">Full screen</button>
+      <button class="pill" id="theme" type="button">Theme</button>
+    </div>
+  </header>
+  <div class="strip" id="strip" aria-label="Stages"></div>
+
+  <div class="main">
+    <section class="win" aria-label="The program, mock-up">
+      <div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url" id="url">127.0.0.1:8800</span><span class="local">runs locally</span></div>
+      <div class="mock m" id="mock"></div>
+    </section>
+    <aside class="side" id="side"></aside>
+  </div>
+
+  <div class="ctrl">
+    <button class="navbtn" id="back" type="button">Back</button>
+    <div class="progress" id="prog" aria-hidden="true"></div>
+    <span class="counter" id="count"></span>
+    <button class="navbtn next" id="next" type="button">Next</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+let FAST=false, BUSY=false;
+const sleep=ms=>FAST?Promise.resolve():new Promise(r=>setTimeout(r,ms));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- the files the program writes (real names), with a short note and a minimal made-up preview ---------- */
+const FILES={
+ "Brief.md":{d:"The agreed goal: what the lab teaches, for whom, at what level, and the frameworks it maps to. Everything later is built from it.",
+  p:"# DEMO-1 Brief\nTeach: triage a suspicious sign-in (who, what ran, where it called out)\nAudience: SOC Tier 1, entry level · Exercise · 45 min\nDifficulty target: 3 of 10 · Anti-AI ceiling: level 2\nFrameworks: DCWF 511 · NICE PD-WRL-001 · ATT&CK T1078, T1105, T1071.001"},
+ "Open Items Register.md":{d:"Every open question and every decision, with who decided and when. Nothing is lost between sessions or between people.",
+  p:"| ID   | Item                                   | Status  | Decided by       |\n| OI-1 | Log sources: Windows Security + Sysmon | Decided | Builder-approver |\n| OI-2 | One hint per mission, costs points     | Decided | Builder-approver |"},
+ "Time Record.md":{d:"The date each gate was passed and the time worked, measured from the program's own records, never estimated.",
+  p:"| Gate                   | Date   | Time worked |\n| Start (Brief approved) | 10 Nov | 0 h 25 m    |\n| Design approved        | 10 Nov | 1 h 10 m    |\n| Build done             | 10 Nov | 0 h 50 m    |\n(a row is added at each gate)"},
+ "Evidence-Pack Spec.md":{d:"What evidence the lab must hold and where each piece lives: the machines, the logs, the normal activity and the adversary activity hidden in it.",
+  p:"Hosts: WS-07 (Windows 11), SIEM-01 (Splunk), JUMP-01\nLogs: Windows Security 4624, Sysmon 1 and 3\nNormal activity: 14 days, about 200 sign-ins a day\nAdversary activity: 1 sign-in from 198.51.100.23,\n  then certutil.exe, then a call out to 203.0.113.45"},
+ "Competency to Mission Map.md":{d:"Each mission tied to the skill it measures and to the frameworks, so every mark the student earns proves something named.",
+  p:"M1 Who signed in?      NICE PD-WRL-001 · ATT&CK T1078     · D3FEND D3-UBA\nM2 What ran next?      NICE PD-WRL-001 · ATT&CK T1105     · D3FEND D3-PA\nM3 Where did it call?  NICE PD-WRL-001 · ATT&CK T1071.001 · D3FEND D3-NTA"},
+ "Constraint Register.md":{d:"The promises the design makes, each with the check that proves it and the gate it must pass by. A gate is refused while a promise due there is open.",
+  p:"| ID  | Promise                                        | Due by          | State |\n| C-1 | No mission answered from another's record      | Design approved | open  |\n| C-2 | The sign-in hides in normal volume (200 a day) | Build done      | open  |\n| C-3 | Every answer reachable as the student          | Build done      | open  |"},
+ "Difficulty Deviation Ledger.md":{d:"The difficulty target, and every change made during the build logged with its effect, so the difficulty measured at testing can be explained.",
+  p:"Target: 3 of 10 (Tier 1, entry level)\nWatch item: M3 should need the time window found in M2\n| # | Change                               | Effect       |\n| 1 | Normal sign-ins raised to 200 a day  | a bit harder |"},
+ "workbook-spec.json":{d:"The missions as data: titles, text, options, hints and where each answer comes from. The program builds the workbook from it.",
+  p:'{ "lab": "DEMO-1", "type": "Exercise",\n  "missions": [\n    { "id": "M1", "title": "Who signed in?", "answer": "(graded: hidden)" },\n    { "id": "M2", "title": "What ran next?", "answer": "(graded: hidden)" },\n    { "id": "M3", "title": "Where did it call out?", "answer": "(graded: hidden)" } ] }'},
+ "DEMO-1 workbook.xlsm":{d:"The missions in the platform's import format, built from the spec and checked by the workbook checker before you can approve.",
+  p:"Tabs: Campaign · Missions · Hints · Answers (graded: hidden)\nWorkbook checker: PASS"},
+ "build-plan.json":{d:"Every build step in order, its level (runs alone, waits for your approval, or is yours by hand) and the exact commands it is allowed to send.",
+  p:'{ "steps": [\n  { "id": "B0", "what": "Build-baseline check (read only)",   "level": "L1" },\n  { "id": "B1", "what": "Install Sysmon on WS-07",            "level": "L2" },\n  { "id": "B2", "what": "Create the lab accounts",            "level": "L2" },\n  { "id": "B3", "what": "Generate 14 days of normal sign-ins", "level": "L2" },\n  { "id": "B4", "what": "Add the suspicious sign-in",         "level": "L2P" }, ... ] }'},
+ "provisioning-spec.json":{d:"The machines to launch on the platform: names, operating systems, networks, and which one is the jump box.",
+  p:'{ "hosts": [\n  { "name": "JUMP-01", "role": "jump box", "external_address": true },\n  { "name": "WS-07",   "os": "Windows 11", "network": "lab" },\n  { "name": "SIEM-01", "app": "Splunk",     "network": "lab" } ] }'},
+ "Provisioning Checklist.md":{d:"Your checklist for the platform's console. The program cannot see the console, so you launch the machines and tick each line.",
+  p:"[ ] Launch JUMP-01 from the platform's console\n[ ] Launch WS-07 (Windows 11) on the lab network\n[ ] Launch SIEM-01 (Splunk) on the lab network\n[ ] Add the student account in the platform"},
+ "files/02_create_accounts.ps1":{d:"A build script the AI wrote for step B2. It reads the lab's passwords from a staging file as data, so no password appears on a command line in the logs the student will search. The staging file is removed at the freeze.",
+  p:"# B2 · Create the lab accounts on WS-07 (DEMO-1)\n# Passwords come from the staging file as data, never on a command line\n$accounts = Import-Csv 'C:/lab-staging/accounts.csv'\nforeach ($a in $accounts) {\n  New-LocalUser -Name $a.account -Password (ConvertTo-SecureString $a.value -AsPlainText -Force)\n}"},
+ "files/03_seed_signins.ps1":{d:"The script for step B3: two weeks of ordinary sign-ins, so the suspicious one has to be found, not spotted.",
+  p:"# B3 · 14 days of normal sign-ins on WS-07, about 200 a day\n# Ordinary users at ordinary hours: the haystack for mission 1\nparam([int]$Days = 14, [int]$PerDay = 200)\n..."},
+ "DEMO-1 Lab Credentials.md":{d:"Every password made for this lab, and every default account the platform's image carries: its account, host, purpose and what happens to it before delivery. Graded: hidden, each Show in the History. A password the student uses or that belongs to the story is proposed by the AI and approved by you. Before the freeze each one is changed or disabled, proven by signing in, then searched for as the student.",
+  p:"| Account  | Host    | Purpose | Changes before delivery |\n| j.ortega | WS-07   | build   | yes |\n| svc_seed | WS-07   | build   | yes |\n| admin    | SIEM-01 | image default | changed at B5a |\n| Administrator | WS-07 | image default | disabled before delivery |\n(values hidden; each change proven by signing in)", g:true},
+ "Open Items Register.md · updated":{d:"A live document. The AI opens an item the moment something blocks the build, and closes it once the fix you approved has worked, with who decided and when.",
+  p:"| OI-1 | Log sources: Windows Security + Sysmon         | Decided |\n| OI-2 | One hint per mission, costs points             | Decided |\n| OI-3 | The student's role cannot read network events  | Closed: read access added, approved by a.builder; M3 captured again |"},
+ "Constraint Register.md · updated":{d:"Also live: each promise flips to PASS or FAIL with its proof as the build runs, and a gate stays refused while one due there is open.",
+  p:"| C-1 | No mission answered from another's record | PASS (run 5) |\n| C-2 | The sign-in hides in normal volume        | PASS: 2,814 normal sign-ins over 14 days |\n| C-3 | Every answer reachable as the student     | FAIL, then PASS after OI-3's fix |"},
+ "Captured Answers.md":{d:"Each answer as taken from the live lab, signed in as the student, never written by hand. Graded: hidden until you press Show, and each Show is logged.",
+  p:"M1 captured as the student · 10 Nov 15:12 · value hidden\nM2 captured as the student · 10 Nov 15:13 · value hidden\nM3 captured as the student · 10 Nov 15:15 · value hidden (again, after OI-3's fix)", g:true},
+ "SOLVE-LOG - DEMO-1.md":{d:"The solver's full record, written outside the Build System and brought back: what it searched, what it found, its answer, where it struggled, its comments on the lab and the difficulty it rates. It is assessed in full before any fix.",
+  p:"M1 · searched sign-ins by source address · answer given · first try\nM2 · chose powershell.exe first, then corrected · 2 tries\nM3 · needed M2's time window to narrow the search\nRated difficulty: 3 of 10\nComment: the decoy in M2 reads fair; nothing gives M3 away", f:true},
+ "Freeze record":{d:"In the factory today: the record that build tools, passwords and history were removed, and the student's view checked.",
+  p:"Factory record (SOC III):\nBuild folders, build password, shell and browser history: removed\nBuild-time internet access: closed\nData matched the source exactly: 1,182,827 events", f:true},
+ "Facilitator Guide":{d:"In the factory today: the guide for whoever runs the lab, generated at release. Its answer key never leaves the instructor's hands.",
+  p:"Cover · Contents · Missions · Answer key (instructor only)", f:true}
+};
+
+/* ---------- small helpers for the mock ---------- */
+const STAGES=["Brief","Design","Build","Testing","Release"];
+function chrome(active, inner, who){
+  return `<div class="mbar"><b>Cyber Range Build System</b><nav>${["Dashboard","Labs","History","Rules copy","Lessons"].map(n=>`<span${n===active?' style="text-decoration:underline"':''}>${n}</span>`).join("")}</nav><span class="muser">${who||"a.builder · Builder-approver"}</span></div><div class="mmain">${inner}</div>`;
+}
+function pathBar(approved){
+  return `<div class="tblwrap"><div class="pathbar" id="pathbar">${STAGES.map((s,i)=>{
+    const st=i<approved?"approved":i===approved?"current":"later";
+    return `<div class="pstep ${st}" data-i="${i}"><div class="ptrack"><span class="seg ${i===0?'none':(i<=approved?'done':'')}"></span><span class="pdot">${st==="approved"?"✓":i+1}</span><span class="seg ${i===4?'none':(i<approved?'done':'')}"></span></div><span class="pname">${i+1} · ${s}</span><span class="small muted">${st==="approved"?"Approved":st==="current"?"Current":""}</span></div>`}).join("")}</div></div>`;
+}
+function setPath(n){const pb=$("#pathbar");if(pb)pb.outerHTML=pathBar(n);}
+function labHead(approved, extra){
+  return `<div class="row" style="justify-content:space-between"><div style="min-width:0"><h2 style="font-size:19px;margin:4px 0 0">DEMO-1: Suspicious sign-in</h2><span class="small muted">Exercise (made up) · difficulty target 3 · anti-AI ceiling level 2 · 45 min · rules v5 · Builder-approver a.builder</span></div><span class="mbtn hold">Put the lab build on hold</span></div>
+  <div class="card" style="margin:8px 0 0;padding:8px 12px"><div class="row" style="justify-content:space-between"><b class="small">Lab path</b><span class="small muted">Stage ${Math.min(approved+1,5)} of 5 · approve each stage to move on</span></div>${pathBar(approved)}</div>${extra||""}`;
+}
+/* Flash what just changed. No automatic scrolling: the presenter scrolls when ready. */
+function mark(el){
+  if(typeof el==="string")el=$(el); if(!el||FAST)return;
+  el.classList.remove("changed"); void el.offsetWidth; el.classList.add("changed");
+}
+async function typeInto(sel,text){
+  const el=typeof sel==="string"?$(sel):sel; if(!el)return;
+  if(FAST){el.textContent=text;return;}
+  mark(el);
+  el.textContent=""; const step=Math.max(1,Math.ceil(text.length/45));
+  for(let i=0;i<text.length;i+=step){el.textContent=text.slice(0,i+step);await new Promise(r=>setTimeout(r,16));}
+}
+function reveal(sel){const el=$(sel);if(!el)return;el.hidden=false;if(!FAST){el.classList.remove("fadein");void el.offsetWidth;el.classList.add("fadein");mark(el);}}
+function tick(sel){const el=$(sel);if(el){el.classList.add("on");mark(el.parentElement);}}
+function setCell(sel,html,cls){const e=$(sel);if(!e)return;e.className=cls||"";e.innerHTML=html;mark(e.closest("tr")||e);}
+async function run(sel,{kind,id,lines,cost,note}){
+  const el=$(sel); if(!el)return;
+  const head=s=>`<div class="rhead"><b>${kind} run ${id}</b><span class="state ${s}">${s==="running"?'<span class="spin"></span> Running':"Done"}</span><span class="small muted">cap about US$6 · you can stop it</span>${s==="done"?`<span class="small muted" style="margin-left:auto">US$${cost}</span>`:""}</div>`;
+  el.hidden=false;
+  if(FAST){el.innerHTML=head("done")+`<ol class="rsteps">${lines.map(l=>`<li>${l}</li>`).join("")}</ol>${note?`<div class="small" style="margin-top:4px">${note}</div>`:""}`;return;}
+  el.innerHTML=head("running")+`<ol class="rsteps"></ol>`; el.classList.add("fadein"); mark(el);
+  const ol=$("ol",el);
+  for(const l of lines){await sleep(520);const li=document.createElement("li");li.textContent=l;li.className="fadein";ol.appendChild(li);}
+  await sleep(450); el.innerHTML=head("done")+ol.outerHTML+(note?`<div class="small fadein" style="margin-top:4px">${note}</div>`:"");
+}
+function addProduced(names){
+  const box=$("#produced"); if(box){box.hidden=false;const ul=$("ul",box);names.forEach(n=>{const li=document.createElement("li");li.innerHTML=`<span class="mono">${esc(n)}</span>${FILES[n]&&FILES[n].g?' <span class="warn small">(graded: hidden)</span>':''}${FILES[n]&&FILES[n].f?' <span class="flag">proven in the factory</span>':''}`;if(!FAST)li.className="newfile";ul.appendChild(li);});mark(box);}
+  names.forEach(n=>{if(!CUR.files.includes(n))CUR.files.push(n);}); renderFiles(names[names.length-1]);
+}
+function toast(text){const m=$("#mock");const t=document.createElement("div");t.className="toast fadein";t.textContent=text;m.appendChild(t);if(!FAST)setTimeout(()=>t.remove(),3200);else t.remove();}
+
+/* the solve-rounds loop: light one player, show one card, the previous one gone */
+const LOOPWHO={build:"Cyber Range Build System",you:"Builder-approver",solver:"Solver workspace (outside)"};
+function loopStep(n,who,a1,a2,title,text,gate){
+  $$(".lnode").forEach(e=>e.classList.toggle("on",e.id==="n-"+who));
+  [["#a1",a1],["#a2",a2]].forEach(([id,v])=>{const e=$(id);if(!e)return;e.classList.remove("go");e.firstElementChild.textContent=v||"";if(v&&!FAST){void e.offsetWidth;e.classList.add("go");}});
+  const c=$("#nowcard"); if(c){c.className="nowcard "+who;
+    c.innerHTML=`<div class="nstep">Step ${n} of 9 · ${LOOPWHO[who]}</div><div class="ntitle">${esc(title)}${gate?'<span class="ngate">your decision</span>':''}</div><div>${esc(text)}</div>`;
+    if(!FAST){c.classList.remove("fadein");void c.offsetWidth;c.classList.add("fadein");}}
+  $$("#ldots i").forEach((d,i)=>{d.className=i<n-1?"done":i===n-1?"on":"";});
+}
+
+/* ---------- the diagram: how the Build System connects to the platform ---------- */
+function diagram(open){
+  const c=open?"open":"closed";
+  return `<div class="diag" id="diag"><svg viewBox="0 0 760 330" role="img" aria-label="How the Cyber Range Build System connects to the platform">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="lane" x="6" y="6" width="120" height="318" rx="8"/><text class="lt" x="20" y="26">YOU</text>
+  <rect class="lane" x="138" y="6" width="370" height="318" rx="8"/><text class="lt" x="152" y="26">CYBER RANGE BUILD SYSTEM</text><text class="note" x="152" y="40">private, on your machine</text>
+  <rect class="lane" x="520" y="6" width="234" height="318" rx="8"/><text class="lt" x="534" y="26">THE PLATFORM</text>
+  <rect class="box" x="18" y="62" width="96" height="40" rx="6"/><text x="33" y="86">Browser</text>
+  <rect class="box" x="18" y="236" width="96" height="40" rx="6"/><text x="30" y="260">Your hands</text>
+  <rect class="box" x="156" y="62" width="150" height="40" rx="6"/><text x="168" y="86">Screens (local only)</text>
+  <rect class="box" x="156" y="140" width="150" height="40" rx="6"/><text x="168" y="164">AI worker</text>
+  <rect class="boxk" x="156" y="232" width="150" height="48" rx="6"/><text x="168" y="252">Key-holder</text><text class="note" x="168" y="268">holds the API key</text>
+  <rect class="boxk" x="348" y="132" width="146" height="56" rx="6"/><text x="360" y="153">Lab tool</text><text class="note" x="360" y="169">holds the range key,</text><text class="note" x="360" y="181">in memory only</text>
+  <rect class="box" x="348" y="232" width="146" height="48" rx="6"/><text x="360" y="252">AI provider</text><text class="note" x="360" y="268">the only way out</text>
+  <rect class="boxp" x="538" y="62" width="198" height="40" rx="6"/><text x="550" y="86">Console</text>
+  <rect class="boxp" x="538" y="140" width="96" height="40" rx="6"/><text x="550" y="164">Jump box</text>
+  <rect class="boxp" x="646" y="128" width="90" height="28" rx="6"/><text x="656" y="147">WS-07</text>
+  <rect class="boxp" x="646" y="166" width="90" height="28" rx="6"/><text x="656" y="185">SIEM-01</text>
+  <path class="ln" d="M114,82 L154,82" marker-end="url(#ah)"/>
+  <path class="ln" d="M231,102 L231,138" marker-end="url(#ah)"/><text class="note" x="238" y="124">each run</text>
+  <path class="ln" d="M306,160 L346,160" marker-end="url(#ah)"/><text class="note" x="300" y="200">only through a</text><text class="note" x="300" y="212">checked tool</text>
+  <path class="ln" d="M231,180 L231,230" marker-end="url(#ah)"/>
+  <path class="ln" d="M306,256 L346,256" marker-end="url(#ah)"/>
+  <path class="ln dash" d="M114,256 C 300,310 520,300 600,104" marker-end="url(#ah)"/><text class="note" x="390" y="314">you launch the machines by hand</text>
+  <path class="link ${c}" id="dlink" d="M494,160 L536,160" marker-end="url(#ah)"/>
+  <rect class="gate ${c}" id="dgate" x="498" y="196" width="148" height="40" rx="6"/>
+  <text class="gtxt ${c}" id="dg1" x="506" y="212">${open?"OPEN: SSH only,":"CLOSED by default"}</text>
+  <text class="gtxt ${c}" id="dg2" x="506" y="228">${open?"to 192.0.2.10 only":"no address entered"}</text>
+  <path class="ln" d="M634,154 L644,146" /><path class="ln" d="M634,166 L644,176"/>
+  </svg></div>`;
+}
+function openDiagram(){const d=$("#diag");if(d)d.outerHTML=diagram(true);}
+
+/* ---------- the tour ---------- */
+const STEPS=[];
+const add=s=>STEPS.push(s);
+
+add({stage:-1,kicker:"Start",title:"What the Cyber Range Build System is",url:"",
+ lead:"One person turns a learning goal into a tested cyber range lab, stage by stage. The AI does the heavy work; the person approves every gate.",
+ html:()=>`<div class="intro"><p class="big">From a learning goal to a released lab, in five gated stages</p>
+ <p class="muted">The method was built and proven in our factory, where lab campaigns are designed, built, tested and released on the platform. The Build System puts that method into screens: one Builder-approver drives a lab from brief to release, with the AI working inside fixed limits.</p>
+ <div class="flow"><span>1 Brief</span><b>→</b><span>2 Design</span><b>→</b><span>3 Build</span><b>→</b><span>4 Testing</span><b>→</b><span>5 Release</span></div>
+ <div class="nums">
+  <div class="num"><div class="v">3 · 49</div><div class="l">SOC assessments and missions, live on the range in 8 weeks</div></div>
+  <div class="num"><div class="v">5</div><div class="l">DFIR campaigns, first versions in 4 days, deployed and used</div></div>
+  <div class="num"><div class="v">1 / 49</div><div class="l">questions an AI answered from the mission text alone</div></div>
+  <div class="num"><div class="v">1.2M</div><div class="l">events of authored activity in one lab (SOC III)</div></div>
+ </div>
+ <p class="small muted" style="margin-top:14px">The tour follows one made-up lab, DEMO-1, a short SOC Tier 1 exercise. Click the highlighted control on each screen, or press Next. No AI is called: every name, address and answer is invented, and the addresses come from the ranges reserved for documentation.</p>
+ <div class="ladder" aria-label="Lab depth by tier"><div class="lhd">Lab depth by tier</div>
+  <div class="lrow"><b>SOC I</b><span><em>5</em> machines</span><span><em>1</em> network</span><span><em>5</em> emulated machines</span></div>
+  <div class="lrow"><b>SOC II</b><span><em>7</em> machines</span><span><em>2</em> networks</span><span><em>27</em> emulated machines</span></div>
+  <div class="lrow"><b>SOC III</b><span><em>12</em> machines</span><span><em>3</em> networks</span><span><em>28</em> emulated machines</span></div></div></div>`,
+ beats:[],
+ proof:{t:"Proven in the factory",l:["3 SOC assessments (49 missions) live in 8 weeks","5 DFIR campaigns, first versions in 4 days","Every graded answer captured from the running lab, never written by hand"],s:"Source: the factory's SOC III walkthrough and release records, 2026."},
+ more:"The factory is where the method was worked out and proven, lab by lab. The Build System is the same method as a product: the same rules, the same gates, the same checks, in screens a team can use. In the depth ladder, machines are the virtual machines run on the range for each lab; emulated machines are the further hosts that appear in the lab's logs, generated as part of the authored activity, with no machine behind them."
+});
+
+add({stage:-1,kicker:"Sign in",title:"Sign in, and the dashboard",url:"127.0.0.1:8800/login",
+ lead:"The program runs privately on your own machine. Each person has an account and a role.",
+ html:()=>`<div class="mbar"><b>Cyber Range Build System</b></div><div class="mmain" id="screen"><div class="card" style="max-width:380px;margin:30px auto">
+  <h2>Sign in</h2><div class="field"><label>Username</label><div class="inp" id="u" data-ph="username"></div></div>
+  <div class="field"><label>Password</label><div class="inp" id="p" data-ph="password"></div></div>
+  <div class="field"><label>Two-factor code</label><div class="inp" id="c" data-ph="6 digits"></div></div>
+  <span class="mbtn primary" id="signin">Sign in</span></div></div>`,
+ beats:[
+  {who:"you",say:"Signs in. An account locks after 5 wrong tries and signs out after 30 idle minutes.",target:"#signin",hint:"Click Sign in",
+   act:async()=>{await typeInto("#u","a.builder");await typeInto("#p","••••••••••••");await typeInto("#c","482 913");await sleep(300);
+    $("#mock").innerHTML=chrome("Dashboard",`<h2 style="font-size:19px">Dashboard</h2>
+    <div class="grid2"><div class="card"><h3>Labs</h3><p class="muted small">No lab yet.</p><span class="mbtn primary" id="newlab">Start a new lab</span></div>
+    <div class="card"><h3>AI spend this month</h3><p class="mono">US$0.00 of US$200.00</p><p class="small muted">Set by the Admin, checked today</p></div>
+    <div class="card"><h3>Program rules copy</h3><p>v5 <span class="small muted">· a read-only copy of the factory's rule set; the Admin takes each new version</span></p></div>
+    <div class="card"><h3>Containers and backups</h3><p class="ok">All running</p><p class="small muted">Encrypted backup every night</p></div></div>`);
+    $("#mock").classList.add("fadein");}},
+  {who:"sys",auto:true,say:"The dashboard: your labs, the AI spend against its monthly budget, and the program's own copy of the rules, which the AI reads but can never change.",target:"#newlab",hint:"Click Start a new lab",act:async()=>{}}
+ ],
+ more:"Three roles: the Admin (accounts, the rules copy, budgets), the Builder-approver (drives a lab and approves its gates) and the Viewer (reads, never acts). Every action is written to an add-only History."
+});
+
+add({stage:0,kicker:"Stage 1 · Brief",title:"Start a new lab: the brief",url:"127.0.0.1:8800/labs/new",
+ lead:"The Builder-approver writes what the lab is for, in plain words. The AI starts from this.",
+ html:()=>chrome("Labs",`<h2 style="font-size:19px">Start a new lab</h2><div class="card">
+  <div class="grid2"><div class="field"><label>Lab code</label><div class="inp" id="f-code" data-ph="e.g. DEMO-1"></div></div>
+  <div class="field"><label>Name</label><div class="inp" id="f-name" data-ph="up to 32 characters"></div></div></div>
+  <div class="field"><label>What should the lab teach or measure?</label><div class="inp area" id="f-teach" data-ph=""></div></div>
+  <div class="field"><label>Who is it for, and at what level?</label><div class="inp" id="f-aud" data-ph=""></div></div>
+  <div class="grid2"><div class="field"><label>Lab type</label><div class="inp" id="f-type" data-ph="Guided Lab, Exercise or Challenge"></div></div>
+  <div class="field"><label>Does it assess people against job roles?</label><div class="row" style="min-height:31px"><span class="chk" id="f-roles"></span><span class="small">Yes</span></div></div>
+  <div class="field"><label>Difficulty target (0 to 10)</label><div class="inp" id="f-diff" data-ph=""></div></div>
+  <div class="field"><label>Intended duration</label><div class="inp" id="f-dur" data-ph=""></div></div>
+  <div class="field"><label>Anti-AI-solver ceiling</label><div class="inp" id="f-ceil" data-ph="how hard it must be for an AI"></div></div></div>
+  <span class="mbtn primary" id="kick">Start the kickoff</span></div>`),
+ beats:[
+  {who:"you",say:"Writes the goal and the audience in plain words.",target:"#f-teach",hint:"Click the first box to fill in the brief",
+   act:async()=>{await typeInto("#f-code","DEMO-1");await typeInto("#f-name","Suspicious sign-in");
+    await typeInto("#f-teach","Triage a suspicious sign-in: find who signed in, what ran next, and where it called out.");
+    await typeInto("#f-aud","SOC Tier 1 analysts, entry level.");}},
+  {who:"you",say:"Sets the type, the difficulty target, the time and the anti-AI ceiling: how hard the lab must be for an AI to solve alone.",target:"#f-diff",hint:"Click to set the targets",
+   act:async()=>{await typeInto("#f-type","Exercise");tick("#f-roles");await typeInto("#f-diff","3");await typeInto("#f-dur","45 minutes");await typeInto("#f-ceil","Level 2");}},
+  {who:"you",say:"Starts the kickoff: the first AI run of the lab.",target:"#kick",hint:"Click Start the kickoff",act:async()=>{},advance:true}
+ ],
+ more:"The anti-AI ceiling has levels from the factory's Anti-AI-Solver Guide. The factory limit is level 3; level 4 only on the operator's explicit statement."
+});
+
+add({stage:0,kicker:"Stage 1 · Brief",title:"The AI drafts the brief and asks what only you can decide",url:"127.0.0.1:8800/labs/DEMO-1",
+ lead:"The AI reads the brief and the rules copy, maps the frameworks and writes the first files. Then it stops and asks.",
+ html:()=>chrome("Labs",labHead(0,`<div class="stagecard"><div class="stagehead"><div><b>Stage 1 · Brief</b> <span class="small" style="color:var(--m-accent)">current</span><div class="small muted">The kickoff run reads your brief and the rules copy.</div></div></div>
+  <div class="runcard" id="run1" hidden></div>
+  <div class="card" id="fw" hidden style="margin:8px 0"><h3>Framework link (the brief's section 4)</h3><div class="small">DCWF 511 Cyber Defense Analyst · NICE PD-WRL-001 Defensive Cybersecurity · ATT&amp;CK T1078, T1105, T1071.001 · D3FEND D3-UBA, D3-PA, D3-NTA</div></div>
+  <div class="card" id="produced" hidden style="margin:8px 0"><b>What this stage produced</b><ul class="tight"></ul></div>
+  <div id="dec" hidden><b>Your decisions (2)</b><p class="small muted">Questions the AI needs you to answer. Each shows the options and the AI's recommendation.</p>
+   <div class="decision"><b>OI-1. Which logs should the student search?</b><div class="opt rec">A. Windows Security and Sysmon, in Splunk (recommended: covers all three missions)</div><div class="opt">B. Windows Security only</div><div class="opt">C. Add the firewall logs</div><div class="row" style="margin-top:6px"><span class="mbtn" id="use1">Use the recommendation</span><div class="inp" id="a1" style="flex:1;min-width:160px" data-ph="your answer"></div></div></div>
+   <div class="decision"><b>OI-2. Hints?</b><div class="opt rec">A. One hint per mission, costing points (recommended: fits entry level)</div><div class="opt">B. No hints</div><div class="row" style="margin-top:6px"><span class="mbtn">Use the recommendation</span><div class="inp" id="a2" style="flex:1;min-width:160px" data-ph="your answer"></div></div></div>
+   <span class="mbtn primary" id="send">Send my decisions to the AI</span></div>
+  <div class="runcard" id="run2" hidden></div>
+  <div style="margin-top:12px;border-top:1px solid var(--m-line);padding-top:10px" class="row"><span class="mbtn primary" id="approve1">Approve stage 1 · Brief</span><span class="mbtn" style="margin-left:auto">Send back for rework</span></div></div>`)),
+ beats:[
+  {who:"ai",auto:true,say:"Kickoff run: reads the brief and the rules, maps the frameworks, writes the brief and the open items. Each run has a cost cap and a Stop button.",
+   act:async()=>{await run("#run1",{kind:"Kickoff",id:1,cost:"1.84",lines:["Read the brief and the rules copy v5","Chose the work role and the frameworks","Wrote Brief.md and Open Items Register.md","Opened 2 decisions for the Builder-approver"]});reveal("#fw");addProduced(["Brief.md","Open Items Register.md"]);}},
+  {who:"ai",auto:true,say:"Asks two questions only the Builder-approver can answer, each with options and a recommendation.",act:async()=>{reveal("#dec");}},
+  {who:"you",say:"Answers. \"Use the recommendation\" fills the box; any answer can be written instead.",target:"#use1",hint:"Click Use the recommendation",
+   act:async()=>{await typeInto("#a1","I agree with the recommendation: A");await typeInto("#a2","I agree with the recommendation: A");}},
+  {who:"you",say:"Sends both answers to the AI, word for word, in one run.",target:"#send",hint:"Click Send my decisions to the AI",
+   act:async()=>{await run("#run2",{kind:"Decisions",id:2,cost:"0.62",lines:["Recorded OI-1 and OI-2 as decided by a.builder","Updated Brief.md"]});}},
+  {who:"gate",say:"Approves stage 1. Only the lab's Builder-approver can; the AI never passes a gate. The start date goes into the time record.",target:"#approve1",hint:"Click Approve stage 1 · Brief",
+   act:async()=>{setPath(1);addProduced(["Time Record.md"]);toast("Brief approved · 10 Nov · written to the History and the Time Record");}}
+ ],
+ more:"The AI never sees the API key: a separate key-holder adds it to each request. The AI's only way out of the program is to the AI provider."
+});
+
+add({stage:1,kicker:"Stage 2 · Design",title:"The design: story, evidence, missions, and where every answer lives",url:"127.0.0.1:8800/labs/DEMO-1",
+ lead:"The design decides the lab. The AI writes it; the program checks it; the Builder-approver questions it.",
+ html:()=>chrome("Labs",labHead(1,`<div class="stagecard"><div class="stagehead"><div><b>Stage 2 · Design</b> <span class="small" style="color:var(--m-accent)">current</span><div class="small muted">The design run writes the lab's design from the approved brief.</div></div><span class="mbtn" id="startdesign">Start the design</span></div>
+  <div class="runcard" id="run3" hidden></div>
+  <div class="card" id="produced" hidden style="margin:8px 0"><b>What this stage produced</b><ul class="tight"></ul><div class="small" id="checks" hidden style="margin-top:6px">Checks: Workbook checker <span class="ok">✓ PASS</span> · Citations <span class="ok">✓ PASS</span></div></div>
+  <div id="light" hidden class="card" style="margin:8px 0"><b>Light decisions the AI took (2)</b><p class="small muted">Choices with a clear default, taken so the work did not stop. To object, say so.</p><ul class="tight small"><li>The Splunk index is named demo1 (run 3)</li><li>Mission titles kept under 40 characters (run 3)</li></ul></div>
+  <div class="card" style="margin:8px 0"><h3>AI for this stage</h3><div class="inp area" id="askbox" data-ph="A question or an instruction for the Design stage"></div><div class="row" style="margin-top:6px"><span class="mbtn primary" id="ask">Ask</span><span class="small muted">One AI run, at most about US$6.</span></div><div class="runcard" id="run4" hidden></div></div></div>`)),
+ beats:[
+  {who:"you",say:"Starts the design run.",target:"#startdesign",hint:"Click Start the design",act:async()=>{}},
+  {who:"ai",auto:true,say:"Writes the design: the story, the evidence, three missions, and a fixed place for every answer. The program checks it at once.",
+   act:async()=>{await run("#run3",{kind:"Design",id:3,cost:"3.95",lines:["Wrote the story and the evidence plan","Wrote 3 missions and where each answer lives","Mapped each mission to the frameworks","Set the promises the design makes, with their checks","Built the workbook and ran the workbook checker"]});
+    addProduced(["Evidence-Pack Spec.md","Competency to Mission Map.md","Constraint Register.md","Difficulty Deviation Ledger.md","workbook-spec.json","DEMO-1 workbook.xlsm"]);reveal("#checks");reveal("#light");}},
+  {who:"you",say:"Questions the design in the stage's chat.",target:"#askbox",hint:"Click the chat box to ask a question",
+   act:async()=>{await typeInto("#askbox","Can mission 2 be answered without mission 1's answer?");}},
+  {who:"ai",say:"Answers the question and changes no file. A question gets an answer, not a change; anything it notices comes as a recommendation.",target:"#ask",hint:"Click Ask",
+   act:async()=>{await run("#run4",{kind:"Chat",id:4,cost:"0.41",lines:["Read the design and the mission map"],note:"<b>Yes.</b> Mission 2 starts from the host named in its own text, so it does not need mission 1's account. No file changed."});}}
+ ],
+ proof:{t:"Proven in the factory · SOC III",l:["16 missions, 16 separate records: no two answered from the same record","Each mission checked against everything the student already knows, and against the search they would naturally run","Every mission mapped to DCWF, NICE, D3FEND and ATT&CK"],s:"Source: SOC III independence check and competency map, August 2026."},
+ more:"The workbook checker is the same validator the factory runs before every release: it looks for leaked answers, guessable answers, AI resistance, the answer format and fair multiple-choice options."
+});
+
+add({stage:1,kicker:"Stage 2 · Design",title:"Missions and answers: what the student sees, and what stays hidden",url:"127.0.0.1:8800/labs/DEMO-1/missions",
+ lead:"Each mission shows the student's view first. The answer stays hidden until the Builder-approver presses Show.",
+ html:()=>chrome("Labs",`<h2 style="font-size:19px">DEMO-1 · Missions and answers</h2><p class="small muted">Only the lab's Builder-approver and the Admin can open this page. Each Show is written to the History.</p>
+  ${[["M1","Who signed in?","On 3 November a sign-in to WS-07 came from an address the company has never used. Which account signed in?","Free text","(made up) j.ortega"],
+     ["M2","What ran next?","Within ten minutes of that sign-in, a program started that this user never runs. Which one?","powershell.exe · certutil.exe · mshta.exe · wmic.exe","(made up) certutil.exe"],
+     ["M3","Where did it call out?","That program contacted one outside address. Which address?","Free text, an IPv4 address","(made up) 203.0.113.45"]].map((m,i)=>`
+  <div class="card"><div class="row" style="justify-content:space-between"><b>${m[0]} · ${m[1]}</b><span class="small muted">Hint: 1, costs points</span></div>
+   <p style="margin:6px 0">${m[2]}</p><p class="small muted">Answer type: ${m[3]}</p>
+   <div style="border-top:1px dashed var(--m-line);margin-top:8px;padding-top:6px" class="row"><span class="small"><b>Instructor only.</b> Answer:</span><span class="hidden-val" id="ans${i+1}">hidden</span><span class="mbtn" id="show${i+1}">Show</span></div></div>`).join("")}
+  <div class="card"><h3>Accounts the lab uses</h3><p class="small muted">Their passwords are made for this lab at the build plan and kept in the lab's credentials file (graded: hidden). Every build password changes before delivery.</p>
+  <div class="tblwrap"><table><tr><th>Account</th><th>Machine</th><th>Purpose</th><th>Changes before delivery</th></tr><tr><td>j.ortega</td><td>WS-07</td><td>build</td><td>yes</td></tr><tr><td>student</td><td>SIEM-01</td><td>the student's own</td><td>set on the platform</td></tr></table></div></div>
+  <span class="mbtn" id="backlab">Back to the lab</span>`),
+ beats:[
+  {who:"you",say:"Opens mission 1's answer to check it against the design.",target:"#show1",hint:"Click Show on mission 1",
+   act:async()=>{const a=$("#ans1");a.textContent="(made up) j.ortega";a.style.color="var(--m-fg)";toast("Written to the History: a.builder showed M1's answer, 10 Nov 14:05");}},
+  {who:"sys",auto:true,say:"The Show is written to the History with who and when. Graded content is hidden by default everywhere in the program.",act:async()=>{},target:"#backlab",hint:"Click Back to the lab"}
+ ],
+ more:"Answers in this mock are made up. In a real lab every graded answer is captured from the running lab during Build, never typed by hand."
+});
+
+add({stage:1,kicker:"Stage 2 · Design",title:"Constraints: the design's promises, each with its proof",url:"127.0.0.1:8800/labs/DEMO-1#constraints",
+ lead:"Each promise the design makes has a check and a deadline. A gate stays refused while a promise due there is open.",
+ html:()=>chrome("Labs",labHead(1,`<div class="stagecard"><b>Stage 2 · Design</b> <span class="small" style="color:var(--m-accent)">current</span>
+  <div class="card" style="margin:10px 0"><h3>Constraints (3)</h3><p class="small muted">A constraint closes when the AI writes PASS with its proof in a run, or when you mark it PASS or accept it.</p>
+  <div class="tblwrap"><table><tr><th>ID</th><th>Promise</th><th>Due by</th><th>State</th></tr>
+   <tr><td>C-1</td><td>No mission can be answered from another mission's record<div class="inp" id="c1box" style="margin-top:5px" data-ph="your answer or instruction"></div></td><td>Design approved</td><td id="c1st" class="warn">open</td></tr>
+   <tr><td>C-2</td><td>The suspicious sign-in hides in normal volume (about 200 a day)</td><td>Build done</td><td class="warn">open</td></tr>
+   <tr><td>C-3</td><td>Every answer reachable by the student</td><td>Build done</td><td class="warn">open</td></tr></table></div>
+  <div class="row" style="margin-top:8px"><span class="mbtn primary" id="sendc">Send my decisions to the AI</span></div><div class="runcard" id="run5" hidden></div></div>
+  <div id="refused"><p class="muted small" style="margin:0">"Approve stage 2 · Design" is refused until:</p><ul class="tight small"><li>C-1 is closed (due at Design approved)</li><li>your review ticks are given</li></ul></div></div>`)),
+ beats:[
+  {who:"you",say:"Asks the AI to prove C-1 with the independence check.",target:"#c1box",hint:"Click C-1's box",
+   act:async()=>{await typeInto("#c1box","Run the independence check and close C-1 if it passes.");}},
+  {who:"you",say:"Sends it.",target:"#sendc",hint:"Click Send my decisions to the AI",act:async()=>{}},
+  {who:"ai",auto:true,say:"Runs the independence check and closes C-1 with its proof. C-2 and C-3 are due at Build done, so they stay open for now.",
+   act:async()=>{await run("#run5",{kind:"Decisions",id:5,cost:"0.77",lines:["Checked each mission against what the student knows when it opens","Checked each mission against the search the student would naturally run","No search reveals another mission's answer"]});
+    const s=$("#c1st");s.className="ok";s.innerHTML="✓ PASS <span class='small muted'>(run 5)</span>";
+    $("#refused").innerHTML=`<p class="muted small" style="margin:0">"Approve stage 2 · Design" is refused until:</p><ul class="tight small"><li>your review ticks are given</li></ul>`;}}
+ ],
+ proof:{t:"Proven in the factory · SOC III",l:["No search reveals more than one later answer, and each of those is closed by a design rule","Every mission's answer has a fixed location before any build begins"],s:"Source: SOC III independence check, August 2026."}
+});
+
+add({stage:1,kicker:"Stage 2 · Design",title:"Your review, then Design approved",url:"127.0.0.1:8800/labs/DEMO-1#approve",
+ lead:"Some things no script can check. The Builder-approver ticks each one, then approves the design.",
+ html:()=>chrome("Labs",labHead(1,`<div class="stagecard"><b>Stage 2 · Design</b> <span class="small" style="color:var(--m-accent)">current</span>
+  <div class="card" style="margin:10px 0"><h3>Your review before Design approved</h3><p class="small muted">Tick each item once you have checked it yourself. The program cannot see the platform's console, so you confirm the platform fact. Each tick goes in the History.</p>
+   <div class="tickrow"><span class="chk" id="t1"></span><span>I read every mission as the student would see it.</span></div>
+   <div class="tickrow"><span class="chk" id="t2"></span><span>The difficulty target fits the audience (Tier 1, entry level).</span></div>
+   <div class="tickrow"><span class="chk" id="t3"></span><span>Platform fact: the machine images the design needs exist on the platform.</span></div></div>
+  <div class="row"><span class="mbtn primary" id="approve2">Approve stage 2 · Design</span><span class="mbtn" style="margin-left:auto">Send back for rework</span></div></div>`)),
+ beats:[
+  {who:"you",say:"Checks and ticks each item.",target:"#t1",hint:"Click the first tick box",
+   act:async()=>{tick("#t1");await sleep(350);tick("#t2");await sleep(350);tick("#t3");}},
+  {who:"gate",say:"Approves the design. From here the build must follow it exactly; changing it later means reopening the design, which is recorded.",target:"#approve2",hint:"Click Approve stage 2 · Design",
+   act:async()=>{setPath(2);addProduced(["Time Record.md"]);toast("Design approved · 10 Nov · the approved files are fingerprinted");}}
+ ],
+ more:"After approval the program fingerprints the approved files. If one changes without a decision of yours, the next approval asks you to confirm \"I have seen the changes\"."
+});
+
+add({stage:2,kicker:"Stage 3 · Build",title:"The build plan, its scripts, and the program's safety checks",url:"127.0.0.1:8800/labs/DEMO-1",
+ lead:"The AI turns the design into exact build steps and writes the scripts each step runs. The program checks every step before the Builder-approver sees it.",
+ html:()=>chrome("Labs",labHead(2,`<div class="stagecard"><div class="stagehead"><div><b>Stage 3 · Build</b> <span class="small" style="color:var(--m-accent)">current</span><div class="small muted">First the build plan, then provisioning, then the build steps through the lab tool.</div></div><span class="mbtn" id="startplan">Start the build plan</span></div>
+  <div class="runcard" id="run6" hidden></div>
+  <div class="card" id="produced" hidden style="margin:8px 0"><b>What this stage produced</b><ul class="tight"></ul></div>
+  <div id="plan" hidden class="card" style="margin:8px 0"><h3>The build plan</h3><div class="tblwrap"><table id="plantbl"><tr><th>Step</th><th>What</th><th>Runs</th><th>Level</th></tr>
+   <tr><td>B0</td><td>Build-baseline check of WS-07 and SIEM-01: Windows version, time zone, Splunk answering (read only)</td><td class="mono small">files/00_check.ps1</td><td><span class="lvl L1">L1</span></td></tr>
+   <tr><td>B1</td><td>Install Sysmon on WS-07</td><td class="mono small">files/01_sysmon.ps1</td><td><span class="lvl L2">L2</span></td></tr>
+   <tr><td>B2</td><td>Create the lab accounts (passwords made for this lab, in the credentials file)</td><td class="mono small">files/02_create_accounts.ps1</td><td><span class="lvl L2">L2</span></td></tr>
+   <tr><td>B3</td><td>Generate 14 days of normal sign-ins</td><td class="mono small">files/03_seed_signins.ps1</td><td><span class="lvl L2">L2</span></td></tr>
+   <tr><td>B4</td><td>Add the suspicious sign-in, the program run and the call out</td><td class="mono small">files/04_adversary.ps1</td><td><span class="lvl L2P">L2P</span></td></tr>
+   <tr id="b5row"><td>B5</td><td>Forward the logs to SIEM-01, signing in with its admin login</td><td class="mono small">files/05_forward.sh</td><td><span class="lvl L2P">L2P</span></td></tr>
+   <tr><td>C1-C3</td><td>Capture each answer, signed in as the student</td><td class="mono small">files/capture.ps1</td><td><span class="lvl CAPTURE">CAPTURE</span></td></tr></table></div>
+   <p class="small muted" style="margin:6px 0 0">L1 reads only, runs with no click · L2 changes something, waits for your "Approve step" · L2P a group of steps you approve once · credentials always wait for your click</p></div>
+  <div id="prob" hidden class="badbox"><b>Problems the program found (1)</b><div class="small" style="margin-top:4px">Step B5: <code>files/05_forward.sh</code> signs in to Splunk on SIEM-01 with the admin password the platform's image comes with. That password is the same on every lab built from the image, so it must never stay in a lab or be written in its files. The program knows it by its exact value and refuses the step. Fix: first change it to a password made for this lab.</div><div class="row" style="margin-top:6px"><span class="mbtn" id="fix">Needs fixing</span><span class="small muted">a fix is a plan re-run; or ask the AI for a different change in the stage's chat</span></div></div>
+  <div id="notes" hidden class="card small" style="margin:8px 0"><b>Password notes (2), not a block</b><ul class="tight"><li>B2 sets lab passwords: from the credentials file; each changes before delivery</li><li>B5a sets SIEM-01's admin password: from the credentials file; changes before delivery</li></ul></div>
+  <div class="runcard" id="run7" hidden></div>
+  <div class="row" style="margin-top:10px"><span class="mbtn primary" id="approveplan" hidden>Approve the build plan</span></div></div>`)),
+ beats:[
+  {who:"you",say:"Starts the build plan.",target:"#startplan",hint:"Click Start the build plan",act:async()=>{}},
+  {who:"ai",auto:true,say:"Writes the plan from the approved design: every step, its level, the script each step runs, and the lab's passwords in a graded credentials file.",
+   act:async()=>{await run("#run6",{kind:"Build plan",id:6,cost:"2.31",lines:["Read the approved design","Wrote 6 build steps and 3 capture steps","Wrote the script each step runs","Made the lab's passwords and wrote them in the credentials file","Wrote the provisioning spec and checklist"]});addProduced(["build-plan.json","files/02_create_accounts.ps1","files/03_seed_signins.ps1","DEMO-1 Lab Credentials.md","provisioning-spec.json","Provisioning Checklist.md"]);reveal("#plan");}},
+  {who:"sys",auto:true,say:"The program checks every step and every script before you see them. One is refused: B5 would sign in to Splunk with the admin password the platform's image comes with, the same on every lab. The program knows that exact password and refuses the step.",act:async()=>{$("#b5row").style.background="#fbe9e7";mark("#b5row");await sleep(900);reveal("#prob");}},
+  {who:"you",say:"Marks it \"Needs fixing\". The plan is made again: a new step first changes SIEM-01's admin login to a password made for this lab.",target:"#fix",hint:"Click Needs fixing",
+   act:async()=>{await run("#run7",{kind:"Build plan",id:7,cost:"0.88",lines:["Re-made the plan from the design","Added B5a: change SIEM-01's admin login first (credentials file)"]});
+    const r=$("#b5row");r.style.background="";r.outerHTML=`<tr id="b5row" class="fadein"><td>B5a</td><td>Change SIEM-01's admin login to a lab password (credentials file)</td><td class="mono small">files/05a_admin.sh</td><td><span class="lvl L2P">L2P</span></td></tr><tr class="fadein"><td>B5</td><td>Forward the logs to SIEM-01</td><td class="mono small">files/05_forward.sh</td><td><span class="lvl L2P">L2P</span></td></tr>`;mark("#b5row");await sleep(900);
+    $("#prob").outerHTML=`<div class="okbox small fadein">Problems the program found: 0</div>`;reveal("#notes");reveal("#approveplan");}},
+  {who:"gate",say:"Approves the build plan. Nothing has touched the platform yet.",target:"#approveplan",hint:"Click Approve the build plan",act:async()=>{toast("Build plan approved · written to the History");}}
+ ],
+ more:"The read-only commands and the hold on risky steps are checked exactly: a command that cannot be proven safe is refused, never guessed at. Passwords follow the factory: the AI may create the lab's accounts; a platform's default login is refused by its exact value; and before delivery every build password is changed and searched for as the student.",
+ proof:{t:"Proven in the factory · SOC III",l:["About 130 numbered build scripts, run in order","The same inputs rebuild the same lab","Every platform default password changed before delivery: Splunk's admin password and token changed in all five places on the host, then a scan found no copy of the defaults left"],s:"Source: SOC III build folder and build run-log, 2026."}
+});
+
+add({stage:2,kicker:"Stage 3 · Build",title:"Provisioning: how the Build System reaches the platform",url:"127.0.0.1:8800/labs/DEMO-1#build-steps",
+ lead:"The Builder-approver launches the machines on the platform by hand. The Build System never touches the platform's console.",
+ html:()=>chrome("Labs",labHead(2,`<div class="stagecard"><b>Stage 3 · Build</b> <span class="small" style="color:var(--m-accent)">current</span> <span class="small muted">· Build's steps: <b>Provisioning</b> → Build-baseline → build steps</span>
+  <div class="card" style="margin:10px 0"><h3>Provisioning checklist</h3><p class="small muted">From the approved provisioning spec. Launch each in the platform's console, then tick it.</p>
+   <div class="tickrow"><span class="chk" id="p1"></span><span>JUMP-01, the jump box, with an external address</span></div>
+   <div class="tickrow"><span class="chk" id="p2"></span><span>WS-07 (Windows 11) on the lab network</span></div>
+   <div class="tickrow"><span class="chk" id="p3"></span><span>SIEM-01 (Splunk) on the lab network</span></div>
+   <div class="tickrow"><span class="chk" id="p4"></span><span>The student account, added in the platform</span></div>
+   <div class="row" style="margin-top:8px"><span class="mbtn primary" id="provdone">Provisioning done</span></div></div>
+  ${diagram(false)}</div>`)),
+ beats:[
+  {who:"you",say:"Launches the machines in the platform's console, from the checklist, and ticks each one.",target:"#p1",hint:"Click the first tick box",
+   act:async()=>{for(const i of [1,2,3,4]){tick("#p"+i);await sleep(330);}}},
+  {who:"gate",say:"Marks Provisioning done. The step and who did it go in the History.",target:"#provdone",hint:"Click Provisioning done",act:async()=>{toast("Provisioning done · a.builder · written to the History");}}
+ ],
+ more:"The diagram is the real layout. The AI works inside the program with no way out except the AI provider, through the key-holder. It reaches the lab machines only through one checked tool, and only over a link that starts closed.",
+ diagramNote:true
+});
+
+add({stage:2,kicker:"Stage 3 · Build",title:"Build-baseline: the one link to the platform opens",url:"127.0.0.1:8800/labs/DEMO-1#launch",
+ lead:"The Builder-approver gives the jump box's address. Only then does the lab tool's firewall open, and only to that address.",
+ html:()=>chrome("Labs",labHead(2,`<div class="stagecard"><b>Stage 3 · Build</b> <span class="small" style="color:var(--m-accent)">current</span> <span class="small muted">· Build's steps: Provisioning ✓ → <b>Build-baseline</b> → build steps</span>
+  <div class="card" style="margin:10px 0"><h3>Launch addresses</h3><p class="small muted">Each machine's external address from the platform's console. The firewall then allows SSH only to these addresses. The AI never sees them.</p>
+   <div class="grid2"><div class="field"><label>JUMP-01 external address</label><div class="inp mono" id="addr" data-ph="single IPv4 address"></div></div>
+   <div class="field"><label>WS-07, SIEM-01</label><div class="inp small muted">internal: reached through the jump box</div></div></div>
+   <span class="mbtn primary" id="saveaddr">Save the launch addresses</span></div>
+  <div id="hk" hidden class="warnbox"><b>A host key waits for you</b><div class="small mono" style="margin-top:4px">JUMP-01 · ED25519 SHA256:q3V8…mN0e</div><div class="row" style="margin-top:6px"><span class="mbtn" id="pin">Accept and pin this key</span><span class="small muted">every later connection must match it</span></div></div>
+  <div class="runcard" id="run8" hidden></div>
+  ${diagram(false)}</div>`)),
+ beats:[
+  {who:"you",say:"Enters the jump box's address, read from the platform's console.",target:"#addr",hint:"Click the address box",act:async()=>{await typeInto("#addr","192.0.2.10");}},
+  {who:"sys",say:"The lab tool's firewall opens to that one address, SSH only. Nothing else is reachable, not even a name lookup.",target:"#saveaddr",hint:"Click Save the launch addresses",
+   act:async()=>{openDiagram();await sleep(500);reveal("#hk");}},
+  {who:"you",say:"Checks the jump box's key and pins it.",target:"#pin",hint:"Click Accept and pin this key",act:async()=>{$("#hk").outerHTML=`<div class="okbox small fadein">JUMP-01's host key pinned by a.builder</div>`;}},
+  {who:"ai",auto:true,say:"Build-baseline: the lab tool checks each machine. These checks are step B0, level L1: they only read, so they run with no click. A machine counts as up only when it answers on a port it serves.",
+   act:async()=>{await run("#run8",{kind:"Build-baseline",id:8,cost:"0.54",lines:["B0 · L1, read only: runs with no click","JUMP-01 answers on SSH ✓","WS-07 answers through the jump box ✓","WS-07: Windows version and time zone read ✓","SIEM-01 answers on its web port: Splunk up ✓"]});}}
+ ],
+ more:"The firewall accepts only single IPv4 addresses: no ranges, no private or loopback addresses. If no address is saved, there is no way out at all. The range key is held in memory only, never on disk."
+});
+
+add({stage:2,kicker:"Stage 3 · Build",title:"The build steps, through the lab tool",url:"127.0.0.1:8800/labs/DEMO-1#build-steps",
+ lead:"Steps run one at a time: some wait for their own click, a group is approved once. The registers are live: items open and close, and promises pass or fail, as the build runs.",
+ html:()=>chrome("Labs",labHead(2,`<div class="stagecard"><div class="stagehead"><div><b>Stage 3 · Build</b> <span class="small" style="color:var(--m-accent)">current</span> <span class="small muted">· Provisioning ✓ → Build-baseline ✓ → <b>build steps</b></span></div><span class="mbtn" id="runsteps">Start the build steps</span></div>
+  <div id="waiting" hidden class="warnbox"><b>Waiting for you now (<span id="wn">3</span>)</b><ul class="tight small" id="wl"><li>B1 · L2: approve the step</li><li>B2 · credentials: approve the step</li><li>B3 · L2: approve the step</li></ul></div>
+  <div class="card" style="margin:8px 0"><div class="tblwrap"><table><tr><th>Step</th><th>What</th><th>Level</th><th>State</th></tr>
+   <tr><td>B1</td><td>Install Sysmon on WS-07</td><td><span class="lvl L2">L2</span></td><td id="s1" class="muted">to run</td></tr>
+   <tr><td>B2</td><td>Create the lab accounts (credentials always wait for a click)</td><td><span class="lvl L2">L2</span></td><td id="s2" class="muted">to run</td></tr>
+   <tr><td>B3</td><td>Generate 14 days of normal sign-ins</td><td><span class="lvl L2">L2</span></td><td id="s3" class="muted">to run</td></tr>
+   <tr><td>CP</td><td>BUILD checkpoint: a restore point before the risky step</td><td><span class="lvl CHECKPOINT">CHECKPOINT</span></td><td id="s4" class="muted">to do</td></tr>
+   <tr><td>B4</td><td>Add the suspicious sign-in, the program run and the call out</td><td><span class="lvl L2P">L2P</span></td><td id="s5" class="muted">to run</td></tr>
+   <tr><td>B5a, B5</td><td>Change SIEM-01's admin login, forward the logs (same group as B4)</td><td><span class="lvl L2P">L2P</span></td><td id="s6" class="muted">to run</td></tr>
+   <tr><td>C1-C3</td><td>Capture each answer, signed in as the student</td><td><span class="lvl CAPTURE">CAPTURE</span></td><td id="s7" class="muted">to run</td></tr></table></div>
+   <div class="row" style="margin-top:8px"><span class="mbtn" id="b1ok">Approve step B1</span><span class="mbtn" id="b2ok">Approve step B2</span><span class="mbtn" id="b3ok">Approve step B3</span><span class="mbtn" id="cpok">Checkpoint taken</span><span class="mbtn" id="grpok">Approve group B4 to B5</span></div></div>
+  <div id="fixbox" hidden class="warnbox"><b>A capture failed as the student</b><div class="small" style="margin-top:4px">M3: the student's role cannot read the network events (Sysmon event 3). Proposed fix, a small addition to the plan: give the student's role read access to them, then capture M3 again.</div><div class="row" style="margin-top:6px"><span class="mbtn primary" id="fixok">Approve the fix</span><span class="small muted">or tell the AI what you want instead:</span></div><div class="inp area" style="margin-top:6px" data-ph="Your own instruction for the AI, in place of the proposed fix"></div><div class="row" style="margin-top:6px"><span class="mbtn">Send my instruction to the AI</span><span class="small muted">One AI run; what it proposes comes back to you before anything changes.</span></div></div>
+  <div class="card" id="regs" style="margin:8px 0"><h3>Registers, live</h3><div class="grid2">
+   <div class="tblwrap"><b class="small">Open Items Register</b><table><tr><td>OI-1</td><td>Log sources</td><td class="ok">decided</td></tr><tr><td>OI-2</td><td>Hints</td><td class="ok">decided</td></tr><tr id="oi3" hidden><td>OI-3</td><td>The student's role cannot read the network events</td><td id="oi3st" class="warn">open</td></tr></table></div>
+   <div class="tblwrap"><b class="small">Constraint Register</b><table><tr><td>C-1</td><td>No mission answered from another's record</td><td class="ok">✓ PASS</td></tr><tr><td>C-2</td><td>The sign-in hides in normal volume</td><td id="c2st" class="warn">open</td></tr><tr><td>C-3</td><td>Every answer reachable as the student</td><td id="c3st" class="warn">open</td></tr></table></div></div></div>
+  <div class="card" id="produced" hidden style="margin:8px 0"><b>What this stage produced</b><ul class="tight"></ul></div>
+  <div class="row" style="margin-top:10px"><span class="mbtn primary" id="approve3">Approve stage 3 · Build</span></div></div>`)),
+ beats:[
+  {who:"you",say:"Starts the build steps.",target:"#runsteps",hint:"Click Start the build steps",act:async()=>{}},
+  {who:"ai",auto:true,say:"The read-only checks (B0, L1) already ran in Build-baseline. Every build step changes something, so the lab waits for the Builder-approver.",
+   act:async()=>{reveal("#waiting");}},
+  {who:"you",say:"B1 is L2: installing Sysmon changes WS-07, so it waits for \"Approve step\". The AI then runs exactly the approved commands.",target:"#b1ok",hint:"Click Approve step B1",
+   act:async()=>{$("#wl").firstElementChild.remove();$("#wn").textContent="2";setCell("#s1",'<span class="spin"></span>');await sleep(900);setCell("#s1","✓ done","ok");}},
+  {who:"you",say:"B2 creates the lab's accounts. Credentials always wait for a click. Their passwords were made for this lab, sit in the graded credentials file, and change before delivery.",target:"#b2ok",hint:"Click Approve step B2",
+   act:async()=>{$("#wl").firstElementChild.remove();$("#wn").textContent="1";setCell("#s2",'<span class="spin"></span>');await sleep(900);setCell("#s2","✓ done","ok");}},
+  {who:"you",say:"B3 is L2: it waits for \"Approve step\". The AI then runs exactly the approved commands. The normal sign-ins it writes prove C-2 at once.",target:"#b3ok",hint:"Click Approve step B3",
+   act:async()=>{$("#waiting").hidden=true;setCell("#s3",'<span class="spin"></span>');await sleep(900);setCell("#s3","✓ done","ok");await sleep(400);setCell("#c2st","✓ PASS <span class='small muted'>2,814 sign-ins over 14 days</span>","ok");}},
+  {who:"you",say:"Before the risky step, a BUILD checkpoint: a restore point to go back to if anything goes wrong.",target:"#cpok",hint:"Click Checkpoint taken",
+   act:async()=>{setCell("#s4","✓ taken","ok");}},
+  {who:"you",say:"B4, B5a and B5 are one L2P group: one approval, then they run in order, each command checked, and the group stops by itself on anything unexpected. B5a changes a password, so in the program it still pauses for its own click; the tour skips that click to keep it short.",target:"#grpok",hint:"Click Approve group B4 to B5",
+   act:async()=>{for(const id of ["#s5","#s6"]){setCell(id,'<span class="spin"></span>');await sleep(700);setCell(id,"✓ done","ok");}}},
+  {who:"ai",auto:true,say:"Captures each answer from the live lab, signed in as the student. M3 fails: the student cannot read the network events. The AI opens OI-3, C-3 shows FAIL, and it proposes a fix.",
+   act:async()=>{setCell("#s7",'<span class="spin"></span>');await sleep(1000);setCell("#s7","2 of 3 captured","warn");await sleep(400);reveal("#oi3");setCell("#c3st","✗ FAIL <span class='small muted'>M3 not reachable</span>","bad");await sleep(400);reveal("#fixbox");}},
+  {who:"gate",say:"Approves the proposed fix (or writes a different instruction and sends it to the AI: nothing changes before the Builder-approver agrees). M3 is captured again as the student; OI-3 closes and C-3 passes. The registers record who decided and when.",target:"#fixok",hint:"Click Approve the fix",
+   act:async()=>{$("#fixbox").hidden=true;setCell("#s7",'<span class="spin"></span>');await sleep(900);setCell("#s7","✓ 3 of 3 captured","ok");setCell("#oi3st","closed <span class='small muted'>fixed, approved by a.builder</span>","ok");setCell("#c3st","✓ PASS <span class='small muted'>after OI-3's fix</span>","ok");await sleep(400);addProduced(["Captured Answers.md","Open Items Register.md · updated","Constraint Register.md · updated"]);}},
+  {who:"gate",say:"Approves stage 3: Build done. Its promises due here all pass.",target:"#approve3",hint:"Click Approve stage 3 · Build",
+   act:async()=>{setPath(3);addProduced(["Time Record.md"]);toast("Build done · 10 Nov · written to the History and the Time Record");}}
+ ],
+ proof:{t:"Proven in the factory · SOC III",l:["28 days of activity, about 1.2 million events, two intrusions inside ordinary business traffic","Every answer captured from the live lab at the student's own privilege","The open items and the constraints kept live through the build, each closed with its proof"],s:"Source: SOC III build, capture and register records, 2026."},
+ more:"The lab tool is tested today on stand-in machines. It refuses a command that wipes a disk, and refuses to remove its own access before the freeze. A fix during the build is always a small addition to the approved plan, approved before it runs."
+});
+
+add({stage:3,kicker:"Stage 4 · Testing (a)",title:"The blind solve, outside the Build System",url:"127.0.0.1:8800/labs/DEMO-1",proven:true,
+ lead:"A separate AI, with no context and only the student's view, tries to solve the lab. Its full log comes back and every finding is assessed before anything is fixed.",
+ html:()=>chrome("Labs",labHead(3,`<div class="later"><div class="row" style="justify-content:space-between"><b>Stage 4 · Testing: the solve rounds</b><span class="flag">Proven in the factory · moving into the program next</span></div>
+  <div class="loopwrap">
+   <div class="lnode build" id="n-build"><span class="lname">Cyber Range Build System</span><span class="lsub">knows the answers</span></div>
+   <div class="larrow" id="a1"><span></span></div>
+   <div class="lnode you" id="n-you"><span class="lname">Builder-approver</span><span class="lsub">carries everything across</span></div>
+   <div class="larrow" id="a2"><span></span></div>
+   <div class="lnode solver" id="n-solver"><span class="lname">Solver workspace</span><span class="lsub">outside: no context, the student's view only</span></div>
+  </div>
+  <div class="nowcard" id="nowcard"><span class="muted small">Click "Show the next part" to start round 1.</span></div>
+  <div class="ldots" id="ldots">${Array.from({length:9},()=>"<i></i>").join("")}</div>
+  <div class="roundbar" id="roundbar" hidden>↻ <b>Round 2:</b> only the changed missions go back to the solver. The rounds repeat until the difficulty is locked at the target.</div>
+  <div class="row" style="margin-top:10px"><span class="mbtn" id="tnext">Show the next part</span></div></div>`)),
+ beats:[
+  {who:"sys",say:"Before any solver run, the build runs its own checks and removes its tools and history, so the solver will see only what a student sees.",target:"#tnext",hint:"Click Show the next part",
+   act:async()=>loopStep(1,"build","","","Its own checks first","Every answer against the real grader, a hunt for shortcuts (it knows each answer, so it looks for a lazy path), a sweep for leaked answers. Then its tools and history are removed.")},
+  {who:"sys",say:"Writes the solver's kickoff from the factory's self-test prompt.",target:"#tnext",hint:"Click Show the next part",
+   act:async()=>loopStep(2,"build","→","","Writes the solver's kickoff","From the factory's self-test prompt: what the solver may use, and how to report back.")},
+  {who:"you",say:"Takes the kickoff outside the Build System, to a fresh AI session that has never seen the build or the answers.",target:"#tnext",hint:"Click Show the next part",
+   act:async()=>loopStep(3,"you","","→","Takes it outside","To a fresh AI session that has never seen the build or the answers.")},
+  {who:"solver",say:"Solves as a student would: first from the mission text alone, then on the running lab, with only the student's view.",target:"#tnext",hint:"Click Show the next part",
+   act:async()=>loopStep(4,"solver","","","Solves, with no answers","First from the mission text alone (the paste test), then on the running lab, as the student.")},
+  {who:"solver",say:"Reports from its side: answers, struggles, shortcuts, how the lab reads to it, and the difficulty it rates. Everything is in its full SOLVE-LOG.",target:"#tnext",hint:"Click Show the next part",
+   act:async()=>{loopStep(5,"solver","","","Reports from its side","Its answers, where it struggled, any shortcut it found, how the lab reads to it and the difficulty it rates. Every step is in its full SOLVE-LOG.");addProduced(["SOLVE-LOG - DEMO-1.md"]);}},
+  {who:"you",say:"Brings the full SOLVE-LOG back into the lab.",target:"#tnext",hint:"Click Show the next part",
+   act:async()=>loopStep(6,"you","←","←","Brings the log back","The full SOLVE-LOG goes into the lab, every step of it.")},
+  {who:"sys",say:"Assesses every finding: trust the detection, measure the diagnosis, never inherit the prescription. Each is sized; not every finding needs a fix.",target:"#tnext",hint:"Click Show the next part",
+   act:async()=>loopStep(7,"build","","","Assesses every finding","Each finding measured again, never taken on trust, and sized. For each: a proposed fix, or a not-fix and why, written into the Open Items Register.")},
+  {who:"gate",say:"Approves each fix and each not-fix. Nothing is changed before.",target:"#tnext",hint:"Click Show the next part",
+   act:async()=>loopStep(8,"you","←","","Your decision","Approve each fix and each not-fix, or send the AI a different instruction. Nothing is changed before you agree.",true)},
+  {who:"sys",say:"Applies the approved fixes and solves only the changed missions again. The rounds repeat until the difficulty is locked.",target:"#tnext",hint:"Click Show the next part",
+   act:async()=>{loopStep(9,"build","→","→","Fixes, then the next round","The approved fixes applied and their traces removed. Only the changed missions go back to the solver.");reveal("#roundbar");}}
+ ],
+ proof:{t:"Proven in the factory · SOC III blind solve",l:["From the mission text alone, an AI answered 0 of SOC III's 16 questions (1 of 49 across the three SOC tiers)","Inside the lab with full access, it found the right account, then dropped it because the name looked too common, three times","Its own summary: the answers depend on who acted, from where and in what order, not on what looks unusual","Result: it failed 4 of 16 missions"],s:"Source: SOC III blind solve log, run 4, September 2026."},
+ more:"Why outside: a solver that had seen the build would know the answers. A fresh session with only the student's view measures what a student, or an AI a student pastes the missions into, can really do. Its log is the evidence; the build's assessment is the judgement; your approval is the decision."
+});
+
+add({stage:3,kicker:"Stage 4 · Testing (b)",title:"Difficulty locked, the freeze, and your release test",url:"127.0.0.1:8800/labs/DEMO-1",proven:true,
+ lead:"Once the solve rounds lock the difficulty, the build is cleaned for good and you test exactly what students will get.",
+ html:()=>chrome("Labs",labHead(3,`<div class="later"><div class="row" style="justify-content:space-between"><b>Stage 4 · Testing: the end of the build</b><span class="flag">Proven in the factory · moving into the program next</span></div>
+  <ol class="tight">
+   <li id="tl1" class="muted">The difficulty measured against the target set at design; the ledger explains any gap. The solve time set beside the brief's 45 minutes.</li>
+   <li id="tl2" class="muted">The freeze completes: every build password, and every default account the platform's image carries, changed or disabled; each change proven by signing in (the new password works, the old one fails); then all of them searched for as the student; every build trace removed, the build's own access last (or kept by your recorded decision)</li>
+   <li id="tl3" class="muted">The delivered image, saved on the platform and labelled</li>
+   <li id="tl4" class="muted">Your release test: a full solve as the student, on a fresh copy of the delivered image</li></ol>
+  <div class="row" style="margin-top:10px"><span class="mbtn" id="tnext">Show the next part</span><span class="mbtn primary" id="approve4">Approve stage 4 · Testing</span></div></div>`)),
+ beats:[
+  {who:"sys",say:"The difficulty is locked against the design's target. Every build change was logged with its effect, so any gap is explained, not guessed.",target:"#tnext",hint:"Click Show the next part",act:async()=>{const e=$("#tl1");e.className="";e.style.fontWeight="600";mark(e);addProduced(["Difficulty Deviation Ledger.md"]);}},
+  {who:"sys",say:"The freeze completes: every build password, and every default account the platform's image carries even if the build never used it, is changed or disabled (a Windows one by hand). The AI proves each change by signing in from the jump box: the new password works, the old one fails. Then it searches for all of them as the student, in the files, histories and logs a student can read. Then the tools and history go, the build's own access last.",target:"#tnext",hint:"Click Show the next part",act:async()=>{const e=$("#tl2");e.className="";e.style.fontWeight="600";mark(e);addProduced(["Freeze record"]);}},
+  {who:"you",say:"Saves the delivered image on the platform: what every student will start from.",target:"#tnext",hint:"Click Show the next part",act:async()=>{const e=$("#tl3");e.className="";e.style.fontWeight="600";mark(e);}},
+  {who:"you",say:"Runs the release test as the student, on a fresh copy of the delivered image.",target:"#tnext",hint:"Click Show the next part",act:async()=>{const e=$("#tl4");e.className="";e.style.fontWeight="600";mark(e);}},
+  {who:"gate",say:"Approves Testing done.",target:"#approve4",hint:"Click Approve stage 4 · Testing",act:async()=>{setPath(4);toast("Testing done · in the factory today; in the program next");}}
+ ],
+ proof:{t:"Proven in the factory · SOC III",l:["Difficulty set at 7.0 at design","15 build changes logged with their effect on difficulty","Measured at 6.1 by the blind solve, and the gap explained","Every change of a default password verified by signing in, not by reading the console: a change made in the console does not change the machine"],s:"Source: SOC III difficulty ledger, September 2026."},
+ more:"If a fix is ever needed after this point, the way back is recorded: the build returns to its labelled checkpoint, is fixed and refrozen, and the release test runs again. Nothing is edited live."
+});
+
+add({stage:4,kicker:"Stage 5 · Release",title:"Release: into the platform, cleaned and documented",url:"127.0.0.1:8800/labs/DEMO-1",proven:true,
+ lead:"Proven in the factory, moving into the program next. The missions go into the platform and the student's view is checked one last time.",
+ html:()=>chrome("Labs",labHead(4,`<div class="later"><div class="row" style="justify-content:space-between"><b>Stage 5 · Release</b><span class="flag">Proven in the factory · moving into the program next</span></div>
+  <p class="small muted">What this stage holds (the stage layout already in the program)</p>
+  <ol class="tight"><li id="rl1" class="muted">The missions in the platform checked against the workbook, mission by mission</li>
+   <li id="rl2" class="muted">The manual review items, ticked by you</li>
+   <li id="rl3" class="muted">The Facilitator Guide for whoever runs the lab</li></ol>
+  <div class="row" style="margin-top:10px"><span class="mbtn" id="rnext">Show the next part</span><span class="mbtn primary" id="approve5">Approve stage 5 · Release</span></div></div>`)),
+ beats:[
+  {who:"you",say:"Checks the missions in the platform against the workbook, one by one.",target:"#rnext",hint:"Click Show the next part",act:async()=>{const e=$("#rl1");e.className="";e.style.fontWeight="600";mark(e);}},
+  {who:"you",say:"Ticks the review items no script can check.",target:"#rnext",hint:"Click Show the next part",act:async()=>{const e=$("#rl2");e.className="";e.style.fontWeight="600";mark(e);}},
+  {who:"ai",say:"Generates the Facilitator Guide. Its answer key stays with the instructor.",target:"#rnext",hint:"Click Show the next part",act:async()=>{const e=$("#rl3");e.className="";e.style.fontWeight="600";mark(e);addProduced(["Facilitator Guide"]);}},
+  {who:"gate",say:"Approves Released. The lab is live for students.",target:"#approve5",hint:"Click Approve stage 5 · Release",act:async()=>{setPath(5);toast("Released · the lab is live on the platform");}}
+ ],
+ proof:{t:"Proven in the factory · SOC III",l:["Build folders, the build password, shell and browser history removed","Build-time internet access closed; the student's view verified by searching as the student","Delivered data matched the source exactly: 1,182,827 events","One access channel kept on purpose, for support, recorded as a decision"],s:"Source: SOC III freeze record, September 2026."}
+});
+
+add({stage:5,kicker:"Always there",title:"The record: files, history, costs and time",url:"127.0.0.1:8800/labs/DEMO-1#files",
+ lead:"Everything the lab produced, who approved it and when, what the AI cost, and the time worked: on one page, all the time.",
+ html:()=>chrome("Labs",`<h2 style="font-size:19px">DEMO-1: Suspicious sign-in</h2>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Files, by the stage that created them</h3><span class="mbtn" id="o1">Open</span></div>
+   <div id="files" hidden><div class="tblwrap"><table><tr><th>File</th><th>Created</th><th>Approved</th></tr>
+   <tr><td>Brief.md</td><td class="small">run 1 (kickoff)</td><td class="small">at "Brief approved", 10 Nov</td></tr>
+   <tr><td>Evidence-Pack Spec.md</td><td class="small">run 3 (design)</td><td class="small">at "Design approved", 10 Nov</td></tr>
+   <tr><td>build-plan.json</td><td class="small">run 7 (build plan)</td><td class="small">at "Approve the build plan", 10 Nov</td></tr>
+   <tr><td>files/02_create_accounts.ps1</td><td class="small">run 6 (build plan)</td><td class="small">at "Approve the build plan", 10 Nov</td></tr>
+   <tr><td>files/03_seed_signins.ps1</td><td class="small">run 6 (build plan)</td><td class="small">at "Approve the build plan", 10 Nov</td></tr>
+   <tr><td>DEMO-1 Lab Credentials.md <span class="warn small">(graded: hidden)</span></td><td class="small">run 6 (build plan)</td><td class="small">at "Approve the build plan", 10 Nov</td></tr>
+   <tr><td>Constraint Register.md</td><td class="small">run 3 (design), updated in the build</td><td class="small">at "Design approved"; again at "Build done", 10 Nov</td></tr>
+   <tr><td>Captured Answers.md <span class="warn small">(graded: hidden)</span></td><td class="small">capture steps</td><td class="small">at "Build done", 10 Nov</td></tr></table></div></div></div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">History</h3><span class="mbtn" id="o2">Open</span></div>
+   <div id="hist" hidden class="small mono" style="margin-top:6px;line-height:1.7">10 Nov 13:20 · a.builder · approved "Brief approved"<br>10 Nov 14:05 · a.builder · showed M1's answer<br>10 Nov 14:31 · a.builder · approved "Design approved"<br>10 Nov 14:52 · a.builder · approved the build plan<br>10 Nov 15:02 · a.builder · Provisioning done<br>10 Nov 15:14 · a.builder · approved the fix for OI-3 (M3 captured again)<br>10 Nov 15:20 · a.builder · approved "Build done"</div></div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Runs and costs · time worked</h3><span class="mbtn" id="o3">Open</span></div>
+   <div id="cost" hidden style="margin-top:6px"><div class="tblwrap"><table><tr><th>Stage</th><th>AI runs</th><th>AI cost</th><th>Time worked</th></tr>
+   <tr><td>Brief</td><td>2</td><td class="mono">US$2.46</td><td>0 h 25 m</td></tr><tr><td>Design</td><td>3</td><td class="mono">US$5.13</td><td>1 h 10 m</td></tr><tr><td>Build</td><td>3</td><td class="mono">US$3.73</td><td>0 h 50 m</td></tr></table></div><p class="small muted">Demo figures. In a real lab the time is measured from the program's own records, never estimated.</p></div></div>`),
+ beats:[
+  {who:"sys",say:"Files by stage, with what each gate approved. Graded files stay hidden.",target:"#o1",hint:"Click Open on Files",act:async()=>{reveal("#files");}},
+  {who:"sys",say:"The History is add-only: every approval, every Show, every tick, with who and when.",target:"#o2",hint:"Click Open on History",act:async()=>{reveal("#hist");}},
+  {who:"sys",say:"What the AI cost, run by run, and the time worked per stage.",target:"#o3",hint:"Click Open on Runs and costs",act:async()=>{reveal("#cost");}}
+ ],
+ more:"The program also keeps a lessons file per lab, an encrypted nightly backup, and a hold button that stops every AI run and approval until the Builder-approver resumes."
+});
+
+add({stage:5,kicker:"Getting better",title:"Every lab makes the next one better: the lessons loop",url:"127.0.0.1:8800/lessons",
+ lead:"What a lab teaches the team is captured, reviewed and, when it holds, turned into a rule. The next lab starts with it built in.",
+ html:()=>chrome("Lessons",`<div class="grid2">
+  <div class="card"><h3>DEMO-1 · Lessons</h3><p class="small muted">A process lesson from this lab, for the program's Lessons screen.</p>
+   <div class="inp area" id="lessonbox" data-ph="A process lesson from this lab"></div>
+   <div class="row" style="margin-top:6px"><span class="chk" id="gen"></span><span class="small">generalisable</span><span class="mbtn" id="capture" style="margin-left:auto">Capture lesson</span></div></div>
+  <div class="card" id="review" hidden><h3>Lessons (Admin review)</h3><div class="small"><b>From DEMO-1</b>, captured by a.builder, generalisable</div>
+   <div class="small" id="lessontext" style="margin:6px 0;padding:6px 8px;background:#f6f7f9;border-radius:4px"></div>
+   <div class="row"><span class="mbtn primary" id="promote">Promote</span><span class="mbtn">Archive</span><span class="small muted" id="promoted"></span></div></div></div>
+  <div class="card" id="rulesv6" hidden><h3>Program rules copy</h3><p>v6 available <span class="small muted">· the factory's rules, now with the lesson; taken into the program one way by the Admin</span></p></div>
+  <div class="warnbox" id="adoptbox" hidden><b>The program's rules changed.</b> DEMO-2 works to rules v5; v6 is now available. Choose before the next gate: adopt v6 (every later run reads it), or stay on v5. Your choice goes in the History.
+   <div class="row" style="margin-top:6px"><span class="mbtn primary" id="adopt">Adopt v6</span><span class="mbtn">Stay on v5</span></div></div>`,"a.builder · Builder-approver · a.admin · Admin"),
+ beats:[
+  {who:"you",say:"Writes what the lab taught, in plain words, on the lab's own page.",target:"#lessonbox",hint:"Click the lesson box",
+   act:async()=>{await typeInto("#lessonbox","Before capturing, check the student's role can read every log a mission needs (DEMO-1, OI-3).");}},
+  {who:"you",say:"Marks it as useful beyond this lab and captures it.",target:"#capture",hint:"Click Capture lesson",
+   act:async()=>{tick("#gen");await sleep(300);$("#lessontext").textContent=$("#lessonbox").textContent;reveal("#review");}},
+  {who:"admin",say:"Reviews it on the Lessons screen and promotes it. Promoted lessons go to the factory, where the ones that hold become rules.",target:"#promote",hint:"Click Promote",
+   act:async()=>{$("#promoted").textContent="promoted · sent to the factory's lessons";mark("#promoted");}},
+  {who:"sys",auto:true,say:"The factory's rules gain the lesson. The Admin takes the new rules version into the program, one way; every lab is asked to adopt it.",
+   act:async()=>{await sleep(500);reveal("#rulesv6");await sleep(500);reveal("#adoptbox");}},
+  {who:"you",say:"Adopts v6 on the next lab. From now on the AI works to the improved rules, and the check is built in.",target:"#adopt",hint:"Click Adopt v6",
+   act:async()=>{$("#adoptbox").outerHTML=`<div class="okbox small fadein">DEMO-2 works to rules v6 · adopted by a.builder, written to the History</div>`;}}
+ ],
+ proof:{t:"Proven in the factory",l:["Lessons are captured during each campaign, reviewed by the operator and graduated into the rules when they hold","SOC III's lessons became factory rules: the build's own tooling treated as a place answers can leak (engine §15.20), and how an AI solver's findings are checked before any fix (engine §15.22)","Every rule change is versioned and logged; the rules are at version 3.44 today"],s:"Source: the factory's rules and their change log, 2026."},
+ more:"The program never changes the factory by itself: a promoted lesson becomes a rule only by the factory's own decision, and the program then takes the new rules version as a read-only copy. A lab already under way chooses to adopt it or stay, and the choice is recorded."
+});
+
+add({stage:5,kicker:"Where it stands",title:"What is built, what is proven, what comes next",url:"",
+ lead:"The method is proven in the factory. The program is built through Build and is in its final safety rounds.",
+ html:()=>`<div class="intro"><p class="big">Where the Cyber Range Build System stands</p>
+ <div class="cols3" style="margin-top:12px">
+  <div class="col built"><h3>Built in the program</h3><ul class="tight small"><li>Accounts, roles, History, backups, AI cost caps</li><li>The lessons loop and the rules versions each lab adopts</li><li>Brief and Design with the AI: decisions, constraints, review, gates</li><li>The build plan with its safety checks</li><li>Provisioning and Build-baseline</li><li>The build steps through the lab tool, tested on stand-in machines</li></ul></div>
+  <div class="col proven"><h3>Proven in the factory, moving in next</h3><ul class="tight small"><li>Testing: the blind solve outside the system, its full log assessed, fix rounds you approve, the difficulty locked</li><li>The freeze and the release test</li><li>Release: the platform check and the Facilitator Guide</li></ul></div>
+  <div class="col next"><h3>Next</h3><ul class="tight small"><li>The password checks in their new form, as in the factory: being built now</li><li>The final safety rounds</li><li>The program's full consistency check and an independent QA</li><li>The first real lab built on the platform</li></ul></div></div>
+ <div class="nums"><div class="num"><div class="v">3 · 49</div><div class="l">SOC assessments and missions live in 8 weeks</div></div><div class="num"><div class="v">5</div><div class="l">DFIR campaigns, first versions in 4 days</div></div><div class="num"><div class="v">4 / 16</div><div class="l">SOC III missions an AI failed with full lab access</div></div></div></div>`,
+ beats:[],
+ proof:{t:"Proven in the factory",l:["DFIR campaigns (5) and SOC assessments (3 tiers), live on the range","The SOC III walkthrough shows each step with its evidence"],s:"Source: the factory's release records, 2026."}
+});
+
+add({stage:5,kicker:"Ways to deliver it",title:"Ways to deliver and reach the Cyber Range Build System",url:"",
+ lead:"The method can be delivered as its own program or as a Claude plugin. A Claude connector adds a way to reach the program from a Claude chat.",
+ html:()=>`<div class="intro"><p class="big">Two ways to deliver it, one way to reach it from Claude</p>
+ <div class="cols3 opts" style="margin-top:12px">
+  <div class="col built"><h3>Program</h3><div class="ostat">Built through Build · final safety rounds</div><p class="small muted odef">Its own application with screens: gates, History, roles.</p>
+   <ul class="pc"><li class="pro">Every gate a click, every action in an add-only History</li><li class="pro">It enforces the limits itself: roles, levels, the refuse-list</li><li class="pro">Runs privately; built ready to host for a team</li><li class="con">The most to build and keep up: a full application</li><li class="con">Today on one machine; a team needs it hosted</li></ul></div>
+  <div class="col proven"><h3>Claude plugin</h3><div class="ostat">Assessed · not built</div><p class="small muted odef">The rules and tools packaged for Claude Code, installed in one step.</p>
+   <ul class="pc"><li class="pro">One install: every colleague on the same rules and version</li><li class="pro">Light: nothing to host, it lives inside Claude Code</li><li class="pro">Can carry the build steps, stopping at each gate in the chat</li><li class="con">On each person's machine, its limits are guardrails, not walls</li><li class="con">No dashboard: gates are approved in the chat</li></ul></div>
+  <div class="col next"><h3>Claude connector</h3><div class="ostat">Proposed · not started · works with the program</div><p class="small muted odef">Claude reads the Build System: "where is this lab, what waits for me?"</p>
+   <ul class="pc"><li class="pro">Ask in any Claude chat instead of opening the screens</li><li class="pro">Read-only first: it cannot approve or run anything</li><li class="pro">From the web or a phone, once the program is hosted</li><li class="con">Not a builder on its own: it reads the program behind it</li><li class="con">A team needs the program hosted and personal sign-in</li></ul></div></div>
+ <p class="small muted" style="margin-top:12px;text-align:center">They combine: the program as the core, a connector to ask about it from Claude, a plugin to share the method.</p></div>`,
+ beats:[],
+ more:"Where each stands today: the program is being built and is in its final safety rounds; the plugin has been assessed (what goes in, what stays out, per-person permissions, AI security) and waits for a decision to build; the connector is proposed, designed for a team from the start, read-only first, and would be built only after the program's build stage is finished."
+});
+
+/* ---------- engine ---------- */
+let si=0, bi=0, CUR={files:[],shown:null};
+const mock=$("#mock"), side=$("#side");
+const STAGE_LABEL=["Brief","Design","Build","Testing","Release"];
+const WHO={you:"Builder-approver",ai:"AI",gate:"Human gate",sys:"The program",solver:"AI solver, outside",admin:"Admin"};
+
+function buildChrome(){
+  $("#jump").innerHTML=STEPS.map((s,i)=>`<option value="${i}">${i+1}. ${esc(s.title)}</option>`).join("");
+  $("#prog").innerHTML=STEPS.map(()=>"<i></i>").join("");
+}
+function renderFiles(showName){
+  const box=$("#filesbox"); if(!box)return;
+  if(!CUR.files.length){box.hidden=true;return;}
+  box.hidden=false;
+  if(showName)CUR.shown=showName;
+  $(".chips",box).innerHTML=CUR.files.map(n=>{const f=FILES[n]||{};return `<button type="button" class="chip${f.f?' factory':''}${f.g?' graded':''}${n===CUR.shown?' on':''}" data-file="${esc(n)}">${esc(n)}</button>`}).join("");
+  const v=$(".fileview",box), f=FILES[CUR.shown];
+  if(f){v.hidden=false;v.innerHTML=`<div class="fname">${esc(CUR.shown)}${f.f?' <span class="badge-proven" style="margin:0 0 0 6px">factory</span>':''}</div><p>${esc(f.d)}</p><pre>${esc(f.p)}</pre>`;}else v.hidden=true;
+}
+function renderSide(){
+  const s=STEPS[si];
+  const done=s.beats.slice(0,bi);
+  const nb=s.beats[bi];
+  let hint;
+  const last=s.beats[s.beats.length-1];
+  if(nb&&!nb.auto) hint=nb.hint||"Click the highlighted control";
+  else if(nb&&nb.auto) hint="Click Next";
+  else if(last&&last.auto&&last.target) hint=last.hint;
+  else hint= si<STEPS.length-1?"Click Next for the next screen":"End of the tour. Next starts it again.";
+  const rev=done.slice().reverse();
+  side.innerHTML=`<div class="panel"><span class="kicker">${esc(s.kicker)}</span><h2>${esc(s.title)}</h2><p class="lead">${esc(s.lead)}</p>${s.proven?'<span class="badge-proven">Proven in the factory · moving into the program next</span>':''}
+   <div class="hint"><span class="k">Next</span><span>${esc(hint)}</span></div>
+   <ul class="log">${rev.map((b,i)=>`<li class="${i===0?'new':'old'}"><span class="who ${b.who}">${WHO[b.who]}</span><span>${esc(b.say)}</span></li>`).join("")}</ul>
+   ${si===1&&bi===0?`<div class="legend"><span class="who you">Builder-approver</span><span class="who ai">AI</span><span class="who gate">Human gate</span><span class="who sys">The program</span></div>`:""}</div>
+   <div class="panel files" id="filesbox" hidden><h3>Files created here</h3><div class="chips"></div><div class="fileview" hidden></div></div>
+   ${s.proof?`<div class="panel proof"><h3>${esc(s.proof.t)}</h3><ul>${s.proof.l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><div class="src">${esc(s.proof.s)}</div></div>`:""}
+   ${s.more?`<details class="panel more"><summary>More detail</summary><p>${esc(s.more)}</p></details>`:""}`;
+  renderFiles();
+}
+function setHot(){
+  $$(".hot",mock).forEach(e=>e.classList.remove("hot"));
+  const s=STEPS[si], nb=s.beats[bi];
+  let sel=null;
+  if(nb&&!nb.auto)sel=nb.target;
+  else if(!nb){const last=s.beats[s.beats.length-1]; if(last&&last.target&&last.auto)sel=last.target; else if(last&&last.advance)sel=last.target;}
+  if(sel){const el=$(sel,mock); if(el)el.classList.add("hot");}
+  side.scrollTop=0;
+}
+function renderChrome(){
+  const s=STEPS[si];
+  $("#url").textContent=s.url||"Cyber Range Build System";
+  $("#jump").value=String(si);
+  $$("#prog i").forEach((e,i)=>{e.className=i<si?"done":i===si?"on":"";});
+  $("#count").textContent=`${si+1} / ${STEPS.length}`;
+  $("#strip").innerHTML=STAGE_LABEL.map((n,i)=>`<span class="sbtn${s.stage===i?' on':(s.stage>i?' done':'')}">${i+1} ${n}</span>`).join("");
+  $("#back").disabled=si===0&&bi===0;
+  $("#next").textContent=(si===STEPS.length-1&&bi>=s.beats.length)?"Restart":"Next";
+}
+let LAST_SI=null;
+async function enter(i,upto){
+  const prevStage=LAST_SI==null?null:STEPS[LAST_SI].stage; LAST_SI=i;
+  si=i; CUR={files:[],shown:null};
+  const s=STEPS[si];
+  mock.innerHTML=s.html(); mock.scrollTop=0; mock.classList.remove("fadein");
+  bi=0; renderChrome(); renderSide();
+  const target=upto==null?0:upto;
+  if(target>0){FAST=true; for(let k=0;k<target;k++){await s.beats[k].act();} FAST=false; bi=target;}
+  renderChrome(); renderSide(); setHot();
+  const card=STEPS[si].stage===prevStage?mock.querySelector(".stagecard, .later"):null;
+  if(card&&mock.scrollHeight>mock.clientHeight+2){mock.style.scrollBehavior="auto";mock.scrollTop=Math.max(0,card.getBoundingClientRect().top-mock.getBoundingClientRect().top+mock.scrollTop-8);mock.style.scrollBehavior="";}
+  if(upto==null) await autoRun();
+}
+async function autoRun(){
+  const s=STEPS[si];
+  while(bi<s.beats.length&&s.beats[bi].auto){BUSY=true;renderSide();await s.beats[bi].act();bi++;renderSide();renderChrome();setHot();}
+  BUSY=false;
+}
+async function next(){
+  if(BUSY)return;
+  const s=STEPS[si];
+  if(bi<s.beats.length){
+    BUSY=true; const b=s.beats[bi];
+    $$(".hot",mock).forEach(e=>e.classList.remove("hot"));
+    await b.act(); bi++; renderSide(); renderChrome();
+    if(b.advance&&bi>=s.beats.length){BUSY=false; return go(si+1);}
+    setHot(); await autoRun(); BUSY=false; return;
+  }
+  if(si<STEPS.length-1) return go(si+1);
+  return go(0);
+}
+async function go(i){ if(i<0||i>=STEPS.length)return; BUSY=true; await enter(i); BUSY=false; }
+async function back(){
+  if(BUSY)return;
+  if(bi>0){
+    // step back one action: replay the step up to the previous user action
+    const s=STEPS[si]; let k=bi-1; while(k>0&&s.beats[k].auto)k--;
+    BUSY=true; await enter(si,k); BUSY=false; return;
+  }
+  if(si>0){const p=STEPS[si-1]; BUSY=true; await enter(si-1,p.beats.length); BUSY=false;}
+}
+mock.addEventListener("click",e=>{const h=e.target.closest(".hot"); if(h){e.preventDefault(); next();}});
+side.addEventListener("click",e=>{const c=e.target.closest(".chip"); if(c){CUR.shown=c.dataset.file; renderFiles();}});
+$("#next").addEventListener("click",next);
+$("#back").addEventListener("click",back);
+$("#restart").addEventListener("click",()=>go(0));
+$("#jump").addEventListener("change",e=>go(+e.target.value));
+document.addEventListener("keydown",e=>{
+  if(e.target.closest&&e.target.closest("select,input,textarea"))return;
+  if(e.key==="ArrowRight"||e.key===" "){e.preventDefault();next();}
+  else if(e.key==="ArrowLeft"){e.preventDefault();back();}
+});
+$("#fs").addEventListener("click",()=>{
+  const d=document;
+  try{ if(d.fullscreenElement){d.exitFullscreen().catch(()=>{});} else if(d.documentElement.requestFullscreen){d.documentElement.requestFullscreen().catch(()=>{});} }catch(_){}
+});
+document.addEventListener("fullscreenchange",()=>{$("#fs").textContent=document.fullscreenElement?"Exit full screen":"Full screen";});
+$("#theme").addEventListener("click",()=>{
+  const r=document.documentElement, cur=r.getAttribute("data-theme");
+  const sysDark=matchMedia("(prefers-color-scheme: dark)").matches;
+  const isDark=cur?cur==="dark":sysDark;
+  r.setAttribute("data-theme",isDark?"light":"dark");
+  try{localStorage.setItem("tour-theme",r.getAttribute("data-theme"));}catch(_){}
+});
+try{const t=localStorage.getItem("tour-theme"); if(t)document.documentElement.setAttribute("data-theme",t);}catch(_){}
+buildChrome(); go(0);
+})();
+</script>
+
+</body></html>

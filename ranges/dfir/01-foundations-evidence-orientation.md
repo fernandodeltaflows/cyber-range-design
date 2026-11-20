@@ -2,6 +2,7 @@
 
 **Range:** DFIR and detection · **Day:** 1 · **Missions:** 13
 **Stream:** Blue / defensive operations
+**Built with:** the [Cyber Range Build System](../../README.md#the-cyber-range-build-system) method · [guided tour](https://fernandodeltaflows.github.io/cyber-range-design/build-system-tour/), screen 1
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/dfir-01-foundations-dark.svg">

@@ -3,6 +3,7 @@
 **Tier:** I · **Work role:** DCWF 511 Cyber Defense Analyst · **Stream:** Blue
 **Format:** Challenge (gated) · **Duration:** 2 hours · **Difficulty:** Medium
 **Sector:** Financial services
+**Built with:** the [Cyber Range Build System](../../README.md#the-cyber-range-build-system) method · [guided tour](https://fernandodeltaflows.github.io/cyber-range-design/build-system-tour/), screen 13 (the blind solve)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/soc-01-siem-triage-dark.svg">

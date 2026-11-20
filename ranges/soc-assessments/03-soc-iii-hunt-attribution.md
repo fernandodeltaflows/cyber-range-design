@@ -4,6 +4,7 @@
 **Stream:** Blue team / defensive operations · **Format:** Challenge (gated)
 **Duration:** 2 hours · **Difficulty:** High
 **Sector:** Telecommunications
+**Built with:** the [Cyber Range Build System](../../README.md#the-cyber-range-build-system) method · [guided tour](https://fernandodeltaflows.github.io/cyber-range-design/build-system-tour/), screens 5 to 15: most of its proof panels come from this assessment
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../diagrams/soc-03-hunt-attribution-dark.svg">
@@ -165,6 +166,8 @@ which is the recurring lesson: authors systematically overestimate the difficult
 of content they built and understand.
 
 Only the measured figure describes the shipped assessment, and only it is quoted.
+
+The table comes from blind solve run 3. The [guided tour](https://fernandodeltaflows.github.io/cyber-range-design/build-system-tour/) gives 7.0 at design and 6.1 measured for this assessment: its 7.0 is the target above, and its 6.1 comes from a different blind solve run of the same assessment. Both runs measured below the target.
 
 ---
 

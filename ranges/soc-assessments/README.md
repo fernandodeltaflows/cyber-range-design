@@ -13,6 +13,8 @@ written exam.
 Each tier is a two-hour, time-limited, numerically scored Challenge. Candidates
 are ranked rather than marked pass or fail.
 
+**Built with the [Cyber Range Build System](../../README.md#the-cyber-range-build-system) method.** The [guided tour](https://fernandodeltaflows.github.io/cyber-range-design/build-system-tour/) shows each stage on a made-up lab; most of its proof panels come from SOC III.
+
 **The starting position column is the design.** What the candidate is handed at
 minute zero is what separates the tiers: a detection, a foothold, or something
 that may mean nothing at all. Each sits in a different critical-infrastructure
