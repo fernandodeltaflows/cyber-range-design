@@ -39,7 +39,7 @@ On this page: [The five stages](#the-five-stages) · [What it built](#what-it-bu
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/portfolio-overview-dark.svg">
-  <img alt="Portfolio overview: a crisis tabletop series, red vs blue live exercises, a three-tier assessment programme and two training ranges" src="diagrams/portfolio-overview-light.svg" width="760">
+  <img alt="Portfolio overview: the SOC assessment programme and DFIR range built with the Cyber Range Build System, and the tabletops, red vs blue exercises and adversary emulation range" src="diagrams/portfolio-overview-light.svg" width="760">
 </picture>
 
 **3 crisis tabletop exercises, 3 red vs blue live exercises and a CTF event, a
